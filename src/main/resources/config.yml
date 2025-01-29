@@ -1,0 +1,15 @@
+groups:
+  default:
+    format: '<gray>[%player_world%]</gray> <white>%player_name%</white>: <message>'
+    permission: ''
+    default: true
+
+  vip:
+    format: '<gradient:gold:yellow>[VIP]</gradient> <gray>[%player_world%]</gray> <gold>%player_name%</gold>: <yellow><message></yellow>'
+    permission: 'chat.vip'
+    default: false
+
+  admin:
+    format: '<gradient:red:gold>[ADMIN]</gradient> <gray>[%player_world%]</gray> <red>%player_name%</red>: <message>'
+    permission: 'chat.admin'
+    default: false
