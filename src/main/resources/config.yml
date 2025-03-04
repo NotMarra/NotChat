@@ -1,15 +1,18 @@
-groups:
-  default:
-    format: '<gray>[%player_world%]</gray> <white>%player_name%</white>: <message>'
-    permission: ''
-    default: true
+chat-formats:
+  default: "<gray>[<white>%player%<gray>]: <white>%message%"
+  vip: "<gold>[VIP] <gray>[<white>%player%<gray>]: <white>%message%"
+  owner: "<red>[Owner] <gray>[<white>%player%<gray>]: <white>%message%"
 
-  vip:
-    format: '<gradient:gold:yellow>[VIP]</gradient> <gray>[%player_world%]</gray> <gold>%player_name%</gold>: <yellow><message></yellow>'
-    permission: 'chat.vip'
-    default: false
+local-chat:
+  radius: 100
+  enabled: true
 
-  admin:
-    format: '<gradient:red:gold>[ADMIN]</gradient> <gray>[%player_world%]</gray> <red>%player_name%</red>: <message>'
-    permission: 'chat.admin'
-    default: false
+chat-games:
+  enabled: true
+  rewards:
+    - "give %player% diamond 1"
+    - "eco give %player% 100"
+
+tags:
+  vip: "<gold>[VIP]"
+  owner: "<red>[Owner]"

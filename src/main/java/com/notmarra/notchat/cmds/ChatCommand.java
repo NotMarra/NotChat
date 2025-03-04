@@ -1,4 +1,4 @@
-package org.example.notchat.cmds;
+package com.notmarra.notchat.cmds;
 
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.format.NamedTextColor;
@@ -6,8 +6,8 @@ import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
-import org.example.notchat.utils.ChatGroup;
-import org.example.notchat.utils.ChatManager;
+import com.notmarra.notchat.utils.ChatGroup;
+import com.notmarra.notchat.utils.ChatManager;
 
 public class ChatCommand implements CommandExecutor {
     private final ChatManager chatManager;

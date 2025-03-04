@@ -1,4 +1,4 @@
 name: NotChat
 version: '0.1-DEV'
-main: org.example.notchat.NotChat
+main: com.notmarra.notchat.NotChat
 api-version: '1.21'

@@ -1,4 +1,4 @@
-package org.example.notchat.utils;
+package com.notmarra.notchat.utils;
 
 import org.bukkit.entity.Player;
 

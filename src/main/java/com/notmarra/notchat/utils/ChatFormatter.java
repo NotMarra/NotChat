@@ -1,4 +1,4 @@
-package org.example.notchat.utils;
+package com.notmarra.notchat.utils;
 
 import me.clip.placeholderapi.PlaceholderAPI;
 import net.kyori.adventure.text.Component;
