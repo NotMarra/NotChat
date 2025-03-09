@@ -6,18 +6,18 @@ import com.mojang.brigadier.context.CommandContext;
 import io.papermc.paper.command.brigadier.CommandSourceStack;
 import io.papermc.paper.command.brigadier.Commands;
 
-public class NotBool extends NotArgument {
+public class NotBool extends NotArgument<Boolean> {
 
     public NotBool(String name) {
         super(name);
     }
 
-    public RequiredArgumentBuilder<CommandSourceStack, Boolean> construct(String id) {
-        return Commands.argument(id, BoolArgumentType.bool());
+    public RequiredArgumentBuilder<CommandSourceStack, Boolean> construct() {
+        return Commands.argument(this.name, BoolArgumentType.bool());
     }
 
     @Override
-    public Boolean get(CommandContext ctx, String id) {
-        return BoolArgumentType.getBool(ctx, id);
+    public Boolean get(CommandContext<CommandSourceStack> ctx) {
+        return BoolArgumentType.getBool(ctx, this.name);
     }
 }

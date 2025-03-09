@@ -8,7 +8,7 @@ import io.papermc.paper.command.brigadier.Commands;
 
 import javax.annotation.Nullable;
 
-public class NotFloat extends NotArgument{
+public class NotFloat extends NotArgument<Float> {
     @Nullable private Float min;
     @Nullable private Float max;
 
@@ -33,20 +33,20 @@ public class NotFloat extends NotArgument{
     }
 
     @Override
-    public RequiredArgumentBuilder<CommandSourceStack, Float> construct(String id) {
+    public RequiredArgumentBuilder<CommandSourceStack, Float> construct() {
         if (this.min != null && this.max != null) {
-            return Commands.argument(id, FloatArgumentType.floatArg(this.min, this.max));
+            return Commands.argument(this.name, FloatArgumentType.floatArg(this.min, this.max));
         } else if (this.min != null) {
-            return Commands.argument(id, FloatArgumentType.floatArg(this.min));
+            return Commands.argument(this.name, FloatArgumentType.floatArg(this.min));
         } else if (this.max != null) {
-            return Commands.argument(id, FloatArgumentType.floatArg(this.max));
+            return Commands.argument(this.name, FloatArgumentType.floatArg(this.max));
         } else {
-            return Commands.argument(id, FloatArgumentType.floatArg());
+            return Commands.argument(this.name, FloatArgumentType.floatArg());
         }
     }
 
     @Override
-    public Float get(CommandContext ctx, String id) {
-        return FloatArgumentType.getFloat(ctx, id);
+    public Float get(CommandContext<CommandSourceStack> ctx) {
+        return FloatArgumentType.getFloat(ctx, this.name);
     }
 }

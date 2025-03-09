@@ -8,7 +8,7 @@ import io.papermc.paper.command.brigadier.Commands;
 
 import javax.annotation.Nullable;
 
-public class NotDouble extends NotArgument {
+public class NotDouble extends NotArgument<Double> {
     @Nullable private Double min;
     @Nullable private Double max;
 
@@ -33,20 +33,21 @@ public class NotDouble extends NotArgument {
     }
 
     @Override
-    public RequiredArgumentBuilder<CommandSourceStack, Double> construct(String id) {
+    public RequiredArgumentBuilder<CommandSourceStack, Double> construct() {
         if (this.min != null && this.max != null) {
-            return Commands.argument(id, DoubleArgumentType.doubleArg(this.min, this.max));
+            return Commands.argument(this.name, DoubleArgumentType.doubleArg(this.min, this.max));
         } else if (this.min != null) {
-            return Commands.argument(id, DoubleArgumentType.doubleArg(this.min));
+            return Commands.argument(this.name, DoubleArgumentType.doubleArg(this.min));
         } else if (this.max != null) {
-            return Commands.argument(id, DoubleArgumentType.doubleArg(this.max));
+            return Commands.argument(this.name, DoubleArgumentType.doubleArg(this.max));
         } else {
-            return Commands.argument(id, DoubleArgumentType.doubleArg());
+            return Commands.argument(this.name, DoubleArgumentType.doubleArg());
         }
     }
 
+
     @Override
-    public Double get(CommandContext ctx, String id) {
-        return DoubleArgumentType.getDouble(ctx, id);
+    public Double get(CommandContext<CommandSourceStack> ctx) {
+        return DoubleArgumentType.getDouble(ctx, this.name);
     }
 }

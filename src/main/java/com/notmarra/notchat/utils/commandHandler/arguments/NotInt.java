@@ -8,7 +8,7 @@ import io.papermc.paper.command.brigadier.Commands;
 
 import javax.annotation.Nullable;
 
-public class NotInt extends NotArgument {
+public class NotInt extends NotArgument<Integer> {
     @Nullable private Integer min;
     @Nullable private Integer max;
 
@@ -33,20 +33,20 @@ public class NotInt extends NotArgument {
     }
 
     @Override
-    public RequiredArgumentBuilder<CommandSourceStack, Integer> construct(String id) {
+    public RequiredArgumentBuilder<CommandSourceStack, Integer> construct() {
         if (this.min != null && this.max != null) {
-            return Commands.argument(id, IntegerArgumentType.integer(this.min, this.max));
+            return Commands.argument(this.name, IntegerArgumentType.integer(this.min, this.max));
         } else if (this.min != null) {
-            return Commands.argument(id, IntegerArgumentType.integer(this.min));
+            return Commands.argument(this.name, IntegerArgumentType.integer(this.min));
         } else if (this.max != null) {
-            return Commands.argument(id, IntegerArgumentType.integer(this.max));
+            return Commands.argument(this.name, IntegerArgumentType.integer(this.max));
         } else {
-            return Commands.argument(id, IntegerArgumentType.integer());
+            return Commands.argument(this.name, IntegerArgumentType.integer());
         }
     }
 
     @Override
-    public Integer get(CommandContext ctx, String id) {
-        return IntegerArgumentType.getInteger(ctx, id);
+    public Integer get(CommandContext<CommandSourceStack> ctx) {
+        return IntegerArgumentType.getInteger(ctx, this.name);
     }
 }

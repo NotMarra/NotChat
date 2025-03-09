@@ -8,19 +8,19 @@ import io.papermc.paper.command.brigadier.Commands;
 
 import javax.annotation.Nullable;
 
-public class NotString extends NotArgument {
+public class NotString extends NotArgument<String> {
 
     public NotString(String name) {
         super(name);
     }
 
     @Override
-    public RequiredArgumentBuilder<CommandSourceStack, String> construct(String id) {
-        return Commands.argument(id, StringArgumentType.string());
+    public RequiredArgumentBuilder<CommandSourceStack, String> construct() {
+        return Commands.argument(this.name, StringArgumentType.string());
     }
 
     @Override
-    public String get(CommandContext ctx, String id) {
-        return StringArgumentType.getString(ctx, id);
+    public String get(CommandContext<CommandSourceStack> ctx) {
+        return StringArgumentType.getString(ctx, this.name);
     }
 }
