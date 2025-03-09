@@ -1,18 +1,34 @@
-chat-formats:
+modules:
+  chat_format: true
+  msg: true
+  local_chat: true
+  chat_games: true
+  tags: true
+
+chat_formats:
   default: "<gray>[<white>%player%<gray>]: <white>%message%"
   vip: "<gold>[VIP] <gray>[<white>%player%<gray>]: <white>%message%"
   owner: "<red>[Owner] <gray>[<white>%player%<gray>]: <white>%message%"
 
-local-chat:
-  radius: 100
-  enabled: true
+msg:
+  message_receiver: "<gray>[<white>%player%<gray> -> <white>%target%<gray>]: <white>%message%"
+  message_sender: "<gray>[<white>%player%<gray> -> <white>%target%<gray>]: <white>%message%"
+  message_usage: "<red>Usage: /msg <player> <message>"
+  alias:
+    - "msg"
+    - "tell"
+    - "whisper"
+    - "w"
+    - "m"
+    - "pm"
+    - "dm"
+    - "message"
+    - "r"
 
-chat-games:
-  enabled: true
+local_chat:
+  radius: 100
+
+chat_games:
   rewards:
     - "give %player% diamond 1"
     - "eco give %player% 100"
-
-tags:
-  vip: "<gold>[VIP]"
-  owner: "<red>[Owner]"

@@ -1,10 +1,14 @@
 package com.notmarra.notchat;
 
 import com.notmarra.notchat.cmds.Chat;
-import com.notmarra.notchat.cmds.Test;
 import com.notmarra.notchat.listeners.ChatListener;
+import com.notmarra.notchat.utils.commandHandler.NotCommand;
 import io.papermc.paper.plugin.lifecycle.event.types.LifecycleEvents;
 import org.bukkit.plugin.java.JavaPlugin;
+
+import java.util.List;
+
+import static com.notmarra.notchat.cmds.Chat.Msg;
 
 public final class NotChat extends JavaPlugin {
     public static NotChat instance;
@@ -19,8 +23,10 @@ public final class NotChat extends JavaPlugin {
         getServer().getPluginManager().registerEvents(new ChatListener(this), this);
 
         this.getLifecycleManager().registerEventHandler(LifecycleEvents.COMMANDS, commands -> {
-            commands.registrar().register(Test.Test().build());
-            commands.registrar().register(Chat.Msg().build());
+            List<NotCommand> msgCommands = Msg();
+            for (NotCommand cmd : msgCommands) {
+                commands.registrar().register(cmd.build());
+            }
         });
     }
 
