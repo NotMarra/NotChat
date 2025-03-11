@@ -8,8 +8,12 @@ import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.player.AsyncPlayerChatEvent;
 
-public class ChatListener implements Listener {
+import java.util.HashMap;
+import java.util.Set;
 
+
+
+public class ChatListener implements Listener {
     private final NotChat plugin;
 
     public ChatListener(NotChat plugin) {
@@ -19,23 +23,40 @@ public class ChatListener implements Listener {
     @EventHandler
     public void onChat(AsyncPlayerChatEvent event) {
         Player player = event.getPlayer();
-        String format;
+        NotChat.getInstance().getLogger().info("Player sended message ");
+        HashMap<String, String> chat_formats = NotChat.chat_formats;
+        Set<String> keys = chat_formats.keySet();
 
-        if (player.hasPermission("notchat.owner")) {
-            format = plugin.getConfig().getString("chat-formats.owner");
-        } else if (player.hasPermission("notchat.vip")) {
-            format = plugin.getConfig().getString("chat-formats.vip");
-        } else {
-            format = plugin.getConfig().getString("chat-formats.default");
+        if (NotChat.hasVault()) {
+            String group = NotChat.getPerms().getPrimaryGroup(player);
+
+            if (chat_formats.containsKey(group)) {
+                String format = chat_formats.get(group);
+                sendMessage(player, format, event);
+                return;
+            }
         }
 
+        for (String format : keys) {
+            NotChat.getInstance().getLogger().info("Format: " + format);
+
+            if (player.hasPermission("notchat." + format)) {
+                sendMessage(player, format, event);
+                return;
+            }
+        }
+
+        sendMessage(player, "default", event);
+    }
+
+    private void sendMessage(Player player, String format, AsyncPlayerChatEvent event) {
+        format = plugin.getConfig().getString("chat_formats." + format);
         format = format.replace("%player%", player.getName())
                 .replace("%message%", event.getMessage());
-
         Component message = MiniMessage.miniMessage().deserialize(format);
 
-        if (plugin.getConfig().getBoolean("local-chat.enabled")) {
-            int radius = plugin.getConfig().getInt("local-chat.radius");
+        if (plugin.getConfig().getBoolean("modules.local_chat")) {
+            int radius = plugin.getConfig().getInt("local_chat.radius");
             for (Player p : player.getWorld().getPlayers()) {
                 if (p.getLocation().distance(player.getLocation()) <= radius) {
                     p.sendMessage(message);

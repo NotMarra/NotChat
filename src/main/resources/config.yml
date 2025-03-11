@@ -6,9 +6,9 @@ modules:
   tags: true
 
 chat_formats:
-  default: "<gray>[<white>%player%<gray>]: <white>%message%"
-  vip: "<gold>[VIP] <gray>[<white>%player%<gray>]: <white>%message%"
   owner: "<red>[Owner] <gray>[<white>%player%<gray>]: <white>%message%"
+  vip: "<gold>[VIP] <gray>[<white>%player%<gray>]: <white>%message%"
+  default: "<gray>[<white>%player%<gray>]: <white>%message%"
 
 msg:
   message_receiver: "<gray>[<white>%player%<gray> -> <white>%target%<gray>]: <white>%message%"

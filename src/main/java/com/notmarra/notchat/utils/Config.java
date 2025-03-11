@@ -1,39 +1,46 @@
 package com.notmarra.notchat.utils;
 
 import com.notmarra.notchat.NotChat;
+import org.bukkit.configuration.ConfigurationSection;
 
 import java.util.List;
 
 public class Config {
+    static NotChat instance = NotChat.getInstance();
+
     public static String getString(String key) {
-        return NotChat.getInstance().getConfig().getString(key);
+        return instance.getConfig().getString(key);
     }
 
     public static int getInt(String key) {
-        return NotChat.getInstance().getConfig().getInt(key);
+        return instance.getConfig().getInt(key);
     }
 
     public static boolean getBoolean(String key) {
-        return NotChat.getInstance().getConfig().getBoolean(key);
+        return instance.getConfig().getBoolean(key);
     }
 
     public static double getDouble(String key) {
-        return NotChat.getInstance().getConfig().getDouble(key);
+        return instance.getConfig().getDouble(key);
     }
 
     public static List<String> getStringList(String key) {
-        return NotChat.getInstance().getConfig().getStringList(key);
+        return instance.getConfig().getStringList(key);
+    }
+
+    public static ConfigurationSection getConfigurationSection(String key) {
+        return instance.getConfig().getConfigurationSection(key);
     }
 
     public void save() {
-        NotChat.getInstance().saveConfig();
+        instance.saveConfig();
     }
 
     public void reload() {
-        NotChat.getInstance().reloadConfig();
+        instance.reloadConfig();
     }
 
     public void set(String key, Object value) {
-        NotChat.getInstance().getConfig().set(key, value);
+        instance.getConfig().set(key, value);
     }
 }
