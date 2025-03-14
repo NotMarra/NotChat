@@ -16,6 +16,8 @@ public abstract class ChatGame<T extends ChatGameResponse> {
 
     public abstract T onAnswer(Player player, String answer);
 
+    public abstract String generateProblem();
+
     public ConfigurationSection getSettings() {
         return ConfigFiles.getConfigurationSection("games.yml",id + ".settings");
     }
