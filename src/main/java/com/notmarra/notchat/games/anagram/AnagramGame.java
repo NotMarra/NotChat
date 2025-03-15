@@ -145,7 +145,7 @@ public class AnagramGame extends ChatGame {
                 player.sendMessage("Nemohu detekovat typ slova.");
             }
         } else {
-            player.sendMessage("Nemám další nápovědu.");
+            player.sendMessage("Slovo je: " + originalWord);
         }
     }
 
