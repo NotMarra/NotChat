@@ -85,7 +85,7 @@ public class HangmanGame extends ChatGame {
         StringBuilder display = new StringBuilder();
         
         for (char c : word.toCharArray()) {
-            if (guessedLetters.contains(Character.toUpperCase(c))) {
+            if (guessedLetters.contains(c)) {
                 display.append(c);
             } else {
                 if (c == ' ') {
@@ -114,7 +114,7 @@ public class HangmanGame extends ChatGame {
     
     private boolean isWordGuessed() {
         for (char c : word.toCharArray()) {
-            if (c != ' ' && !guessedLetters.contains(Character.toUpperCase(c))) {
+            if (c != ' ' && !guessedLetters.contains(c)) {
                 return false;
             }
         }
@@ -225,7 +225,7 @@ public class HangmanGame extends ChatGame {
     @Override
     public ChatGameResponse onAnswer(Player player, String answer) {
         answer = answer.trim().toUpperCase();
-        
+
         // whole word/sentence guess
         if (answer.length() > 1) {
             if (answer.equalsIgnoreCase(word)) {
