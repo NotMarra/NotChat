@@ -1,4 +1,7 @@
 name: NotChat
 version: '0.1-DEV'
 main: com.notmarra.notchat.NotChat
+authors:
+  - "NotMarra"
+  - "TheNoiselessNoise"
 api-version: '1.21'
