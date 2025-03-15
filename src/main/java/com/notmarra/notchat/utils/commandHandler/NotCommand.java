@@ -2,7 +2,6 @@ package com.notmarra.notchat.utils.commandHandler;
 
 import com.mojang.brigadier.builder.LiteralArgumentBuilder;
 import com.mojang.brigadier.tree.LiteralCommandNode;
-import com.notmarra.notchat.utils.commandHandler.arguments.Base;
 import com.notmarra.notchat.utils.commandHandler.arguments.NotArgument;
 import io.papermc.paper.command.brigadier.CommandSourceStack;
 import io.papermc.paper.command.brigadier.Commands;
@@ -15,7 +14,7 @@ public class NotCommand extends Base {
         super(name);
     }
 
-    public NotCommand setArgs(HashMap<String, NotArgument> args) {
+    public NotCommand setArgs(HashMap<String, NotArgument<?>> args) {
         this.arguments = args;
         return this;
     }
@@ -31,7 +30,9 @@ public class NotCommand extends Base {
             }
             return true;
         });
-        cmd = cmd.executes(context -> executor.apply(context));
+        if (executor != null) {
+            cmd = cmd.executes(context -> executor.apply(context));
+        }
         return cmd.build();
     }
 

@@ -1,12 +1,12 @@
 package com.notmarra.notchat.listeners;
 
 import com.notmarra.notchat.NotChat;
-import net.kyori.adventure.text.Component;
-import net.kyori.adventure.text.minimessage.MiniMessage;
+import com.notmarra.notchat.utils.ChatFormatter;
+
+import io.papermc.paper.event.player.AsyncChatEvent;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
-import org.bukkit.event.player.AsyncPlayerChatEvent;
 
 import java.util.HashMap;
 import java.util.Set;
@@ -21,7 +21,7 @@ public class ChatListener implements Listener {
     }
 
     @EventHandler
-    public void onChat(AsyncPlayerChatEvent event) {
+    public void onChat(AsyncChatEvent event) {
         Player player = event.getPlayer();
         NotChat.getInstance().getLogger().info("Player sended message ");
         HashMap<String, String> chat_formats = NotChat.chat_formats;
@@ -49,23 +49,25 @@ public class ChatListener implements Listener {
         sendMessage(player, "default", event);
     }
 
-    private void sendMessage(Player player, String format, AsyncPlayerChatEvent event) {
+    private void sendMessage(Player player, String format, AsyncChatEvent event) {
         format = plugin.getConfig().getString("chat_formats." + format);
-        format = format.replace("%player%", player.getName())
-                .replace("%message%", event.getMessage());
-        Component message = MiniMessage.miniMessage().deserialize(format);
 
+
+        ChatFormatter message = ChatFormatter.of(format)
+            .replace(ChatFormatter.K_PLAYER, player.getName())
+            .replace(ChatFormatter.K_MESSAGE, event.message());
+        
         if (plugin.getConfig().getBoolean("modules.local_chat")) {
             int radius = plugin.getConfig().getInt("local_chat.radius");
             for (Player p : player.getWorld().getPlayers()) {
                 if (p.getLocation().distance(player.getLocation()) <= radius) {
-                    p.sendMessage(message);
+                    p.sendMessage(message.build());
                 }
             }
         } else {
-            player.getServer().broadcast(message);
+            player.getServer().broadcast(message.build());
         }
-
+    
         event.setCancelled(true);
     }
 }

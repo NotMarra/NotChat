@@ -1,8 +1,12 @@
 package com.notmarra.notchat;
 
+import com.notmarra.notchat.games.GameManager;
 import com.notmarra.notchat.listeners.ChatListener;
 import com.notmarra.notchat.utils.Config;
+import com.notmarra.notchat.utils.MinecraftStuff;
 import com.notmarra.notchat.utils.commandHandler.NotCommand;
+import com.notmarra.notchat.utils.commandHandler.arguments.NotStringArg;
+
 import io.papermc.paper.plugin.lifecycle.event.types.LifecycleEvents;
 import net.milkbowl.vault.permission.Permission;
 import org.bukkit.Bukkit;
@@ -10,6 +14,7 @@ import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.plugin.RegisteredServiceProvider;
 import org.bukkit.plugin.java.JavaPlugin;
 
+import java.io.File;
 import java.util.HashMap;
 import java.util.List;
 
@@ -20,11 +25,29 @@ public final class NotChat extends JavaPlugin {
     public static Boolean Vault = false;
     public static HashMap<String, String> chat_formats = new HashMap<>();
     private static Permission perms = null;
+    private static GameManager gameManager;
 
+    private static final List<String> CONFIG_FILES = List.of(
+        "config.yml",
+        "games.yml"
+    );
+
+    @Override
+    public void saveDefaultConfig() {
+        for (String file : CONFIG_FILES) {
+            File configFile = new File(getDataFolder(), file);
+            if (!configFile.exists()) {
+                saveResource(file, false);
+            }
+        }
+    }
 
     @Override
     public void onEnable() {
+        MinecraftStuff.getInstance().initialize();
+
         instance = this;
+        
         // Load configuration
         this.saveDefaultConfig();
 
@@ -46,18 +69,56 @@ public final class NotChat extends JavaPlugin {
             this.getLogger().info("Chat format module enabled");
         }
 
+        if (Config.getBoolean("modules.chat_games")) {
+            gameManager = new GameManager(this);
+            this.getLifecycleManager().registerEventHandler(LifecycleEvents.COMMANDS, commands -> {
+                for (NotCommand cmd : gameManager.getCommands()) {
+                    commands.registrar().register(cmd.build());
+                }
+            });
+            this.getLogger().info("Games module enabled");
+        }
+
         this.getLifecycleManager().registerEventHandler(LifecycleEvents.COMMANDS, commands -> {
             if (Config.getBoolean("modules.msg")) {
-                List<NotCommand> msgCommands = Msg();
-                for (NotCommand cmd : msgCommands) {
+                for (NotCommand cmd : Msg()) {
                     commands.registrar().register(cmd.build());
                 }
                 this.getLogger().info("Msg commands registered");
             }
         });
 
+        // TODO: remove
+        this.getLifecycleManager().registerEventHandler(LifecycleEvents.COMMANDS, commands -> {
+            NotCommand cmd = new NotCommand("devtest");
+            cmd.onExecute(ctx -> {
+                ctx.getSource().getSender().sendMessage("devtest");
+                return 1;
+            });
 
-        this.getLogger().info("Enabled successfully - Version: " + this.getDescription().getVersion());
+            NotStringArg type = new NotStringArg("type");
+            type.setSuggestions(List.of("block", "item", "mob", "biome"));
+            type.onExecute(ctx -> {
+                String t = type.get(ctx);
+
+                List<String> stuff = List.of();
+                if (t.equals("block")) stuff = MinecraftStuff.getInstance().blockIdNames;
+                if (t.equals("item")) stuff = MinecraftStuff.getInstance().itemIdNames;
+                if (t.equals("mob")) stuff = MinecraftStuff.getInstance().entityIdNames;
+                if (t.equals("biome")) stuff = MinecraftStuff.getInstance().biomeIdNames;
+
+                for (String s : stuff) {
+                    ctx.getSource().getSender().sendMessage(s);
+                }
+
+                return 1;
+            });
+            cmd.addArg(type);
+
+            commands.registrar().register(cmd.build());
+        });
+
+        this.getLogger().info("Enabled successfully - Version: " + this.getPluginMeta().getVersion());
     }
 
     @Override
