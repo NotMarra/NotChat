@@ -36,10 +36,17 @@ public class ChatFormatter {
 
         for (String key : replacements.keySet()) {
             Object value = replacements.get(key);
+            String valueString;
+
+            if (value instanceof Component component) {
+                valueString = miniMessage.serialize(component);
+            } else {
+                valueString = value.toString();
+            }
 
             TextReplacementConfig replacementConfig = TextReplacementConfig.builder()
                 .match("%" + key + "%")
-                .replacement(value.toString())
+                .replacement(valueString)
                 .build();
             
             baseComponent = baseComponent.replaceText(replacementConfig);
