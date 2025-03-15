@@ -1,23 +1,28 @@
 package com.notmarra.notchat.utils;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 
+import me.clip.placeholderapi.PlaceholderAPI;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.TextReplacementConfig;
 import net.kyori.adventure.text.minimessage.MiniMessage;
+import org.bukkit.entity.Player;
+
+import static com.notmarra.notchat.NotChat.hasPAPI;
 
 public class ChatFormatter {
     public static String K_PLAYER = "player";
     public static String K_TARGET = "target";
     public static String K_MESSAGE = "message";
 
-    private static MiniMessage miniMessage = MiniMessage.miniMessage();
+    private static final MiniMessage miniMessage = MiniMessage.miniMessage();
 
-    private Component baseComponent;
-    private List<Component> components = new ArrayList<>();
-    private HashMap<String, Object> replacements = new HashMap<>();
+    private final Component baseComponent;
+    private final List<Component> components = new ArrayList<>();
+    private final HashMap<String, Object> replacements = new HashMap<>();
 
     public ChatFormatter(Component baseComponent) {
         this.baseComponent = baseComponent;
@@ -52,6 +57,17 @@ public class ChatFormatter {
             baseComponent = baseComponent.replaceText(replacementConfig);
         }
 
+        if (hasPAPI()) {
+            Player p;
+            if (replacements.containsKey(K_PLAYER)) {
+                p = (Player) replacements.get(K_PLAYER);
+            } else {
+                p = null;
+            }
+            String string = PlaceholderAPI.setPlaceholders(p, miniMessage.serialize(baseComponent));
+            baseComponent = miniMessage.deserialize(string);
+        }
+
         return baseComponent;
     }
 
@@ -63,9 +79,7 @@ public class ChatFormatter {
     }
 
     public ChatFormatter appendMany(Component... components) {
-        for (Component component : components) {
-            this.components.add(component);
-        }
+        Collections.addAll(this.components, components);
         return this;
     }
 

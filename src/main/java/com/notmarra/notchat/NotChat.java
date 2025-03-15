@@ -23,6 +23,7 @@ import static com.notmarra.notchat.cmds.Chat.Msg;
 public final class NotChat extends JavaPlugin {
     public static NotChat instance;
     public static Boolean Vault = false;
+    public static Boolean PlaceholderAPI = false;
     public static HashMap<String, String> chat_formats = new HashMap<>();
     private static Permission perms = null;
     private static GameManager gameManager;
@@ -53,7 +54,8 @@ public final class NotChat extends JavaPlugin {
 
         // Check PlaceholderAPI
         if (Bukkit.getPluginManager().isPluginEnabled("PlaceholderAPI")) {
-            this.getLogger().info("Found PlaceholderAPI, hooking into it");
+            this.getLogger().info("PlaceholderAPI found, hooking into it");
+            PlaceholderAPI = true;
         }
 
         // Check Vault
@@ -141,6 +143,8 @@ public final class NotChat extends JavaPlugin {
         return Vault;
     }
 
+    public static Boolean hasPAPI() { return PlaceholderAPI; }
+
     public static HashMap<String, String> getChatFormats() {
         return chat_formats;
     }
@@ -148,4 +152,5 @@ public final class NotChat extends JavaPlugin {
     public static Permission getPerms() {
         return perms;
     }
+
 }
