@@ -1,13 +1,35 @@
 package com.notmarra.notchat.games;
 
-public abstract class ChatGameResponse {
-    private boolean correct;
+public class ChatGameResponse {
+    public boolean correct;
+    public boolean endingGame;
 
-    public boolean isCorrect() {
-        return correct;
+    public ChatGameResponse(boolean correct, boolean endingGame) {
+        this.correct = correct;
+        this.endingGame = endingGame;
     }
 
-    public void setCorrect(boolean correct) {
-        this.correct = correct;
+    public static ChatGameResponse endGame(boolean correct) {
+        return new ChatGameResponse(correct, true);
+    }
+
+    // nastavení správné odpovědi, která zároveň ukončí hru
+    public static ChatGameResponse endGameCorrect() {
+        return new ChatGameResponse(true, true);
+    }
+
+    // nastavení nesprávné odpovědi, která zároveň ukončí hru
+    public static ChatGameResponse endGameIncorrect() {
+        return new ChatGameResponse(false, true);
+    }
+
+    // nastavení správné odpovědi
+    public static ChatGameResponse correct() {
+        return new ChatGameResponse(true, false);
+    }
+
+    // nastavení nesprávné odpovědi
+    public static ChatGameResponse incorrect() {
+        return new ChatGameResponse(false, false);
     }
 }

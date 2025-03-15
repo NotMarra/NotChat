@@ -9,57 +9,53 @@ modules:
 math:
   reward_commands:
     - "give %player% diamond 1"
-  settings:
-    min_number: 1
-    max_number: 1000
-    max_operations: 3
 
 number_guess:
   reward_commands:
     - "give %player% diamond 1"
 
 hangman:
-    reward_commands:
-        - "give %player% diamond 1"
-    settings:
-      minecraft_blocks: true
-      minecraft_items: true
-      minecraft_mobs: true
-      minecraft_biomes: true
-      custom_words:
-        - "notchat"
+  reward_commands:
+    - "give %player% diamond 1"
+  settings:
+    minecraft_blocks: true
+    minecraft_items: true
+    minecraft_mobs: true
+    minecraft_biomes: true
+    custom_words:
+      - "notchat"
 
 fast_type:
-    reward_commands:
-        - "give %player% diamond 1"
-    settings:
-      minecraft_blocks: true
-      minecraft_items: true
-      minecraft_mobs: true
-      minecraft_biomes: true
-      custom_words:
-        - "notchat"
+  reward_commands:
+    - "give %player% diamond 1"
+  settings:
+    minecraft_blocks: true
+    minecraft_items: true
+    minecraft_mobs: true
+    minecraft_biomes: true
+    custom_words:
+      - "notchat"
 
 anagram:
-    reward_commands:
-        - "give %player% diamond 1"
-    settings:
-      minecraft_blocks: true
-      minecraft_items: true
-      minecraft_mobs: true
-      minecraft_biomes: true
-      custom_words:
-        - "notchat"
+  reward_commands:
+    - "give %player% diamond 1"
+  settings:
+    minecraft_blocks: true
+    minecraft_items: true
+    minecraft_mobs: true
+    minecraft_biomes: true
+    custom_words:
+      - "notchat"
 
 true_or_false:
-    reward_commands:
-        - "give %player% diamond 1"
-    settings:
-      minecraft_blocks: true
-      minecraft_items: true
-      minecraft_mobs: true
-      minecraft_biomes: true
-      custom_questions:
-        notchat:
-          question: "Is NotChat a chat plugin?"
-          answer: true
+  reward_commands:
+    - "give %player% diamond 1"
+  settings:
+    minecraft_blocks: true
+    minecraft_items: true
+    minecraft_mobs: true
+    minecraft_biomes: true
+    custom_questions:
+      notchat:
+        question: "Is NotChat a chat plugin?"
+        answer: true

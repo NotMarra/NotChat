@@ -10,33 +10,25 @@ import java.util.List;
 
 public class ConfigFiles {
     public static String getString(String path, String string) {
-        File file = new File(NotChat.getInstance().getDataFolder() + path);
+        File file = new File(NotChat.getInstance().getDataFolder(), path);
         YamlConfiguration yamlConfiguration = YamlConfiguration.loadConfiguration(file);
-        if(yamlConfiguration.contains(string)) {
-            return yamlConfiguration.getString(string);
-        } else {
-            return null;
-        }
+        return yamlConfiguration.getString(string);
     }
 
     public static List<String> getStringList(String path, String string) {
-        File file = new File(NotChat.getInstance().getDataFolder() + path);
+        File file = new File(NotChat.getInstance().getDataFolder(), path);
         YamlConfiguration yamlConfiguration = YamlConfiguration.loadConfiguration(file);
-        if(yamlConfiguration.contains(string)) {
-            return yamlConfiguration.getStringList(string);
-        } else {
-            return null;
-        }
+        return yamlConfiguration.getStringList(string);
     }
 
     public static ConfigurationSection getConfigurationSection(String path, String string) {
-        File file = new File(NotChat.getInstance().getDataFolder() + path);
+        File file = new File(NotChat.getInstance().getDataFolder(), path);
         YamlConfiguration yamlConfiguration = YamlConfiguration.loadConfiguration(file);
-        if(yamlConfiguration.contains(string)) {
-            return yamlConfiguration.getConfigurationSection(string);
-        } else {
-            return null;
-        }
+        return yamlConfiguration.getConfigurationSection(string);
+    }
+
+    public static ConfigurationSection emptyConfigurationSection() {
+        return new YamlConfiguration();
     }
 
     public static void createFile(String name) {
