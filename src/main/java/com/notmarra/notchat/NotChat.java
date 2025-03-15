@@ -47,10 +47,16 @@ public final class NotChat extends JavaPlugin {
         MinecraftStuff.getInstance().initialize();
 
         instance = this;
-        
+
         // Load configuration
         this.saveDefaultConfig();
 
+        // Check PlaceholderAPI
+        if (Bukkit.getPluginManager().isPluginEnabled("PlaceholderAPI")) {
+            this.getLogger().info("Found PlaceholderAPI, hooking into it");
+        }
+
+        // Check Vault
         if (Bukkit.getPluginManager().getPlugin("Vault") != null) {
             Vault = true;
             this.getLogger().info("Vault found, hooking into it");
