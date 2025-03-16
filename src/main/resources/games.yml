@@ -8,15 +8,15 @@ modules:
 
 math:
   reward_commands:
-    - "give %player% diamond 1"
+    - "give %player_name% diamond 1"
 
 number_guess:
   reward_commands:
-    - "give %player% diamond 1"
+    - "give %player_name% diamond 1"
 
 hangman:
   reward_commands:
-    - "give %player% diamond 1"
+    - "give %player_name% diamond 1"
   settings:
     minecraft_blocks: true
     minecraft_items: true
@@ -27,7 +27,7 @@ hangman:
 
 fast_type:
   reward_commands:
-    - "give %player% diamond 1"
+    - "give %player_name% diamond 1"
   settings:
     minecraft_blocks: true
     minecraft_items: true
@@ -38,7 +38,7 @@ fast_type:
 
 anagram:
   reward_commands:
-    - "give %player% diamond 1"
+    - "give %player_name% diamond 1"
   settings:
     minecraft_blocks: true
     minecraft_items: true
@@ -49,7 +49,7 @@ anagram:
 
 true_or_false:
   reward_commands:
-    - "give %player% diamond 1"
+    - "give %player_name% diamond 1"
   settings:
     minecraft_blocks: true
     minecraft_items: true

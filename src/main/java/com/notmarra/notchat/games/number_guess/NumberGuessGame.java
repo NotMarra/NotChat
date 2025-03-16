@@ -7,12 +7,7 @@ import org.bukkit.plugin.java.JavaPlugin;
 
 import com.notmarra.notchat.games.ChatGame;
 import com.notmarra.notchat.games.ChatGameResponse;
-import com.notmarra.notchat.utils.ChatFormatter;
-
-import net.kyori.adventure.text.Component;
-import net.kyori.adventure.text.format.Style;
-import net.kyori.adventure.text.format.TextColor;
-import net.kyori.adventure.text.format.TextDecoration;
+import com.notmarra.notchat.utils.ChatF;
 
 public class NumberGuessGame extends ChatGame {
     public static String GAME_ID = "number_guess";
@@ -71,30 +66,42 @@ public class NumberGuessGame extends ChatGame {
     }
 
     @Override
-    public void onHint(Player player) {
-        player.sendMessage("Myslím si číslo mezi " + minNumber + " a " + maxNumber + ".");
+    public ChatF getTitle() {
+        return ChatF.ofBold("[[[ NUMBER GUESS ]]]", ChatF.C_DODGERBLUE);
+    }
+
+    @Override
+    public ChatF onHint(Player player) {
+        return ChatF.of("Myslím si číslo mezi " + minNumber + " a " + maxNumber + ".");
     }
     
     @Override
-    public String getGameSummary() {
+    public ChatF getGameSummary() {
         if (gameWon) {
-            return "Správně jsi uhádl číslo " + targetNumber + "!";
+            return ChatF.of("Správně jsi uhádl číslo " + targetNumber + "!");
         } else {
-            return "Nepodařilo se ti uhádnout číslo " + targetNumber + " s " + maxAttempts + " pokusy.";
+            return ChatF.of("Nepodařilo se ti uhádnout číslo " + targetNumber + " s " + maxAttempts + " pokusy.");
         }
     }
 
     @Override
     public void start(Player player) {
-        player.sendMessage(Component.text("[[[ NUMBER GUESS ]]]", TextColor.color(30, 144, 255)));
-        player.sendMessage("Myslím si číslo mezi " + minNumber + " a " + maxNumber + ".");
-        player.sendMessage("Máš " + maxAttempts + " pokusů. Jaké číslo si myslím?");
+        ChatF message1 = ChatF.empty()
+            .append("Myslím si číslo mezi " + minNumber + " a " + maxNumber + ".");
+        player.sendMessage(message1.build());
 
-        ChatFormatter hintMessage = ChatFormatter.empty();
-        hintMessage.append(Component.text("/answer <číslo>", Style.style(TextDecoration.BOLD)));
-        hintMessage.append(Component.text(" nebo "));
-        hintMessage.append(Component.text("/hint", Style.style(TextDecoration.BOLD)));
-        hintMessage.append(Component.text(" pro nápovědu."));
+        ChatF message2 = ChatF.empty()
+            .append("Máš ")
+            .appendBold(String.valueOf(maxAttempts), ChatF.C_RED)
+            .append(" pokusů.")
+            .append(" Jaké číslo si myslím?");
+        player.sendMessage(message2.build());
+
+        ChatF hintMessage = ChatF.empty()
+            .appendBold("/answer <číslo>")
+            .append(" nebo ")
+            .appendBold("/hint")
+            .append(" pro nápovědu.");
         player.sendMessage(hintMessage.build());
     }
 
@@ -113,15 +120,16 @@ public class NumberGuessGame extends ChatGame {
                 return ChatGameResponse.endGameIncorrect();
             }
 
-            ChatFormatter message = ChatFormatter.of("[" + guess + "] ");
+            ChatF message = ChatF.of("[" + guess + "] ");
             if (guess < targetNumber) {
-                message.append(Component.text("Větší!", TextColor.color(0, 255, 0)));
+                message.appendBold("Větší!", ChatF.C_GREEN);
             } else {
-                message.append(Component.text("Menší!", TextColor.color(255, 0, 0)));
+                message.appendBold("Menší!", ChatF.C_RED);
             }
-            message.append(Component.text(" Zbývá "));
-            message.append(Component.text(String.valueOf(attemptsLeft), TextColor.color(0, 0, 255)));
-            message.append(Component.text(" pokusů."));
+            message.append(" ");
+            message.append("Zbývá ");
+            message.append(String.valueOf(attemptsLeft), ChatF.C_YELLOW);
+            message.append(" pokusů.");
             player.sendMessage(message.build());
 
             return ChatGameResponse.incorrect();

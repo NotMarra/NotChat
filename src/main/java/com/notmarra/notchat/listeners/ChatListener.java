@@ -1,7 +1,7 @@
 package com.notmarra.notchat.listeners;
 
 import com.notmarra.notchat.NotChat;
-import com.notmarra.notchat.utils.ChatFormatter;
+import com.notmarra.notchat.utils.ChatF;
 
 import io.papermc.paper.event.player.AsyncChatEvent;
 import org.bukkit.entity.Player;
@@ -10,8 +10,6 @@ import org.bukkit.event.Listener;
 
 import java.util.HashMap;
 import java.util.Set;
-
-
 
 public class ChatListener implements Listener {
     private final NotChat plugin;
@@ -52,10 +50,11 @@ public class ChatListener implements Listener {
     private void sendMessage(Player player, String format, AsyncChatEvent event) {
         format = plugin.getConfig().getString("chat_formats." + format);
 
+        NotChat.getInstance().getLogger().info("Format: " + format);
 
-        ChatFormatter message = ChatFormatter.of(format)
-            .replace(ChatFormatter.K_PLAYER, player.getName())
-            .replace(ChatFormatter.K_MESSAGE, event.message());
+        ChatF message = ChatF.of(format)
+            .withPlayer(player)
+            .replace(ChatF.K_MESSAGE, event.message());
         
         if (plugin.getConfig().getBoolean("modules.local_chat")) {
             int radius = plugin.getConfig().getInt("local_chat.radius");

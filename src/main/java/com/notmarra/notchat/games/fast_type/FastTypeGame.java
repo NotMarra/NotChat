@@ -10,13 +10,8 @@ import org.bukkit.plugin.java.JavaPlugin;
 
 import com.notmarra.notchat.games.ChatGame;
 import com.notmarra.notchat.games.ChatGameResponse;
-import com.notmarra.notchat.utils.ChatFormatter;
+import com.notmarra.notchat.utils.ChatF;
 import com.notmarra.notchat.utils.MinecraftStuff;
-
-import net.kyori.adventure.text.Component;
-import net.kyori.adventure.text.format.Style;
-import net.kyori.adventure.text.format.TextColor;
-import net.kyori.adventure.text.format.TextDecoration;
 
 public class FastTypeGame extends ChatGame {
     public static String GAME_ID = "fast_type";
@@ -100,36 +95,37 @@ public class FastTypeGame extends ChatGame {
     }
 
     @Override
-    public void onHint(Player player) {
-        player.sendMessage("Žádná nápověda pro tuto hru.");
+    public ChatF getTitle() {
+        return ChatF.ofBold("[[[ FAST TYPE ]]]", ChatF.C_DODGERBLUE);
     }
 
     @Override
-    public String getGameSummary() {
+    public ChatF onHint(Player player) {
+        return ChatF.of("Žádná nápověda pro tuto hru.");
+    }
+
+    @Override
+    public ChatF getGameSummary() {
         if (completed) {
             double wpm = calculateWPM(targetWord, completionTime);
-            return "Správně jsi napsal slovo '" + targetWord + "' za " + formatTime(completionTime) + " s rychlostí WPM " + String.format("%.2f", wpm) + "!";
+            return ChatF.of("Správně jsi napsal slovo '" + targetWord + "' za " + formatTime(completionTime) + " s rychlostí WPM " + String.format("%.2f", wpm) + "!");
         } else {
-            return "Nepodařilo se ti napsat slovo '" + targetWord + "' v časovém limitu " + MAX_TIME + "s.";
+            return ChatF.of("Nepodařilo se ti napsat slovo '" + targetWord + "' v časovém limitu " + MAX_TIME + "s.");
         }
     }
     
     @Override
     public void start(Player player) {
-        player.sendMessage(Component.text("[[[ FAST TYPE ]]]", TextColor.color(30, 144, 255)));
-
-        ChatFormatter wordMessage = ChatFormatter.empty();
-        wordMessage.append("Napiš slovo: ");
-        wordMessage.append(Component.text(targetWord, Style.style(TextDecoration.BOLD)));
+        ChatF wordMessage = ChatF.of("Napiš slovo: ").appendBold(targetWord);
         player.sendMessage(wordMessage.build());
 
-        ChatFormatter timeMessage = ChatFormatter.empty();
-        timeMessage.append("Máš ");
-        timeMessage.append(Component.text(MAX_TIME + " sekund", Style.style(TextDecoration.BOLD, TextColor.color(255, 0, 0))));
-        timeMessage.append("!");
+        ChatF timeMessage = ChatF.empty()
+            .append("Máš ")
+            .appendBold(MAX_TIME + " sekund", ChatF.C_RED)
+            .append("!");
         player.sendMessage(timeMessage.build());
 
-        player.sendMessage(Component.text("/answer <slovo>", Style.style(TextDecoration.BOLD)));
+        player.sendMessage(ChatF.ofBold("/answer <slovo>").build());
     }
     
     @Override

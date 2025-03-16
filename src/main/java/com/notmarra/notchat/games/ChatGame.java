@@ -1,6 +1,6 @@
 package com.notmarra.notchat.games;
 
-import com.notmarra.notchat.utils.ChatFormatter;
+import com.notmarra.notchat.utils.ChatF;
 import com.notmarra.notchat.utils.ConfigFiles;
 
 import net.kyori.adventure.text.Component;
@@ -31,30 +31,35 @@ public abstract class ChatGame {
         this.rewardCommands = ConfigFiles.getStringList("games.yml", id + ".reward_commands");
     }
 
-    public abstract String getGameSummary();
+    public abstract ChatF getGameSummary();
+
+    public ChatF getTitle() {
+        return ChatF.of("[[[ " + id + " ]]]", ChatF.C_DODGERBLUE);
+    }
+
+    public void initialize(Player player) {
+        player.sendMessage(getTitle().withPlayer(player).build());
+        start(player);
+    }
 
     public abstract void start(Player player);
 
-    public abstract void onHint(Player player);
+    public abstract ChatF onHint(Player player);
 
     public abstract ChatGameResponse onAnswer(Player player, String answer);
 
     // NOTE: you should not override, but can i stop you from doing it?
     public void endCorrect(Player player) {
-        player.sendMessage(getGameSummary());
+        player.sendMessage(getGameSummary().withPlayer(player).build());
         player.sendMessage(Component.text("===> ZÍSKÁVÁŠ ODMĚNU <===", TextColor.color(0, 255, 0)));
         for (String command : rewardCommands) {
-            player.performCommand(
-                ChatFormatter.of(command)
-                    .replace(ChatFormatter.K_PLAYER, player.getName())
-                    .buildString()
-            );
+            player.performCommand(ChatF.of(command).withPlayer(player).buildString());
         }
     }
 
     // NOTE: you can override
     public void endIncorrect(Player player) {
-        player.sendMessage(getGameSummary());
+        player.sendMessage(getGameSummary().withPlayer(player).build());
         player.sendMessage(Component.text("===> SMŮLA <===", TextColor.color(255, 0, 0)));
     }
 }

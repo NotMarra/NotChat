@@ -39,9 +39,7 @@ public abstract class NotArgument<T> extends Base {
                 );
             }
 
-            if (argument.executor != null) {
-                argBuilder = argBuilder.executes(context -> argument.executor.apply(context));
-            }
+            argBuilder = argBuilder.executes(context -> argument.executor.apply(context));
 
             cmd = cmd.then(argBuilder.build());
         }
@@ -65,9 +63,7 @@ public abstract class NotArgument<T> extends Base {
             return true;
         });
 
-        if (this.executor != null) {
-            cmd = cmd.executes(context -> executor.apply(context));
-        }
+        cmd = cmd.executes(context -> executor.apply(context));
 
         return cmd.build();
     }
