@@ -1,49 +1,62 @@
 {
-  "version": "2.0.0",
-  "options": {
-    "env": {
-      "serverPath": "C:/Users/marek/Desktop/mcs/1.21.4",
-      "serverJar": "server.jar"
-    },
-    "shell": {
-      "executable": "powershell.exe",
-      "args": ["-NoProfile", "-Command"]
-    }
-  },
-  "tasks": [
-    {
-      "type": "java (buildArtifact)",
-      "targetPath": "${workspaceFolder}/${workspaceFolderBasename}.jar",
-      "elements": ["${workspaceFolder}/target/classes"],
-      "problemMatcher": [],
-      "label": "java (buildArtifact): NotChat (with server)",
-      "dependsOn": ["copyJar", "startServer"]
-    },
-    {
-      "type": "java (buildArtifact)",
-      "targetPath": "${workspaceFolder}/${workspaceFolderBasename}.jar",
-      "elements": ["${workspaceFolder}/target/classes"],
-      "problemMatcher": [],
-      "label": "java (buildArtifact): NotChat (without server)",
-      "dependsOn": ["copyJar"]
-    },
-    {
-      "type": "shell",
-      "label": "copyJar",
-      "hide": true,
-      "command": "cp -r ${workspaceFolder}/${workspaceFolderBasename}.jar $Env:serverPath/plugins",
-      "problemMatcher": []
-    },
-    {
-      "type": "shell",
-      "label": "startServer",
-      "hide": true,
-      "command": "cd $Env:serverPath; java -jar $Env:serverJar",
-      "problemMatcher": [],
-      "group": {
-        "kind": "build",
-        "isDefault": true
-      }
-    }
-  ]
+	"version": "2.0.0",
+	"options": {
+		"env": {
+			"serverPath": "C:/Users/icema/Downloads/paper",
+			"serverJar": "paper-1.21.4-211.jar"
+		},
+		"shell": {
+			"executable": "powershell.exe",
+			"args": [
+				"-NoProfile",
+				"-Command"
+			]
+		}
+	},
+	"tasks": [
+		{
+			"type": "java (buildArtifact)",
+			"targetPath": "${workspaceFolder}/${workspaceFolderBasename}.jar",
+			"elements": [
+				"${workspaceFolder}/target/classes",
+			],
+			"problemMatcher": [],
+			"label": "java (buildArtifact): NotChat (with server)",
+			"dependsOrder": "sequence",
+			"dependsOn": [
+				"copyJar",
+				"startServer"
+			]
+		},
+		{
+			"type": "java (buildArtifact)",
+			"targetPath": "${workspaceFolder}/${workspaceFolderBasename}.jar",
+			"elements": [
+				"${workspaceFolder}/target/classes",
+			],
+			"problemMatcher": [],
+			"label": "java (buildArtifact): NotChat (without server)",
+			"dependsOn": [
+				"copyJar",
+			]
+		},
+		{
+			"type": "shell",
+			"label": "copyJar",
+			"hide": true,
+			"command": "cp -r ${workspaceFolder}/${workspaceFolderBasename}.jar $Env:serverPath/plugins",
+			"problemMatcher": [],
+		},
+		{
+			"type": "shell",
+			"label": "startServer",
+			"hide": true,
+			"command": "cd $Env:serverPath; java -jar $Env:serverJar",
+			"problemMatcher": [],
+			"group": {
+				"kind": "build",
+				"isDefault": true
+			}
+		}
+	]
 }

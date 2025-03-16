@@ -17,7 +17,6 @@ import org.bukkit.plugin.RegisteredServiceProvider;
 import org.bukkit.plugin.java.JavaPlugin;
 
 import java.io.File;
-import java.util.HashMap;
 import java.util.List;
 
 import static com.notmarra.notchat.cmds.Chat.Msg;
@@ -26,7 +25,7 @@ public final class NotChat extends JavaPlugin {
     public static NotChat instance;
     public static Boolean Vault = false;
     public static Boolean PlaceholderAPI = false;
-    public static HashMap<String, String> chat_formats = new HashMap<>();
+    public static ConfigurationSection chat_formats;
     private static Permission perms = null;
     private static GameManager gameManager;
 
@@ -71,10 +70,7 @@ public final class NotChat extends JavaPlugin {
 
         // Register events
         if (Config.getBoolean("modules.chat_format")) {
-            ConfigurationSection formats = Config.getConfigurationSection("chat_formats");
-            for (String key : formats.getKeys(false)) {
-                chat_formats.put(key, formats.getString(key));
-            }
+            chat_formats = Config.getConfigurationSection("chat_formats");
             this.getServer().getPluginManager().registerEvents(new ChatListener(this), this);
             this.getLogger().info("Chat format module enabled");
         }
@@ -142,7 +138,7 @@ public final class NotChat extends JavaPlugin {
 
     public static Boolean hasPAPI() { return PlaceholderAPI; }
 
-    public static HashMap<String, String> getChatFormats() {
+    public static ConfigurationSection getChatFormats() {
         return chat_formats;
     }
 

@@ -8,9 +8,6 @@ import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 
-import java.util.HashMap;
-import java.util.Set;
-
 public class ChatListener implements Listener {
     private final NotChat plugin;
 
@@ -21,44 +18,32 @@ public class ChatListener implements Listener {
     @EventHandler
     public void onChat(AsyncChatEvent event) {
         Player player = event.getPlayer();
-        NotChat.getInstance().getLogger().info("Player sended message ");
-        HashMap<String, String> chat_formats = NotChat.chat_formats;
-        Set<String> keys = chat_formats.keySet();
 
         if (NotChat.hasVault()) {
             String group = NotChat.getPerms().getPrimaryGroup(player);
-            NotChat.getInstance().getLogger().info("Group: " + group);
 
-            if (group == null) {
-                sendMessage(player, "default", event);
-                return;
-            }
-
-            if (chat_formats.containsKey(group)) {
-                String format = chat_formats.get(group);
+            if (NotChat.getChatFormats().contains(group)) {
+                String format = NotChat.getChatFormats().getString(group);
                 sendMessage(player, format, event);
                 return;
             }
-        }
-
-        for (String format : keys) {
-            NotChat.getInstance().getLogger().info("Format: " + format);
-
-            if (player.hasPermission("notchat." + format)) {
-                sendMessage(player, format, event);
-                return;
+        } else {
+            for (String type : NotChat.getChatFormats().getKeys(false)) {
+                if (player.hasPermission(type)) {
+                    String format = NotChat.getChatFormats().getString(type);
+                    sendMessage(player, format, event);
+                    return;
+                }
             }
         }
 
-        sendMessage(player, "default", event);
+        String format = NotChat.getChatFormats().getString("default");
+        sendMessage(player, format, event);
     }
 
     private void sendMessage(Player player, String format, AsyncChatEvent event) {
-        format = plugin.getConfig().getString("chat_formats." + format);
-
-        NotChat.getInstance().getLogger().info("Format: " + format);
-
-        ChatF message = ChatF.of(format)
+        ChatF message = ChatF.empty()
+            .append(format)
             .withPlayer(player)
             .replace(ChatF.K_MESSAGE, event.message());
         
