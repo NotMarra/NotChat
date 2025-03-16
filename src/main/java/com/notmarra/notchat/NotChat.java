@@ -2,15 +2,17 @@ package com.notmarra.notchat;
 
 import com.notmarra.notchat.games.GameManager;
 import com.notmarra.notchat.listeners.ChatListener;
+import com.notmarra.notchat.utils.ChatF;
 import com.notmarra.notchat.utils.Config;
 import com.notmarra.notchat.utils.MinecraftStuff;
 import com.notmarra.notchat.utils.commandHandler.NotCommand;
-import com.notmarra.notchat.utils.commandHandler.arguments.NotStringArg;
 
 import io.papermc.paper.plugin.lifecycle.event.types.LifecycleEvents;
 import net.milkbowl.vault.permission.Permission;
 import org.bukkit.Bukkit;
+import org.bukkit.command.CommandSender;
 import org.bukkit.configuration.ConfigurationSection;
+import org.bukkit.entity.Player;
 import org.bukkit.plugin.RegisteredServiceProvider;
 import org.bukkit.plugin.java.JavaPlugin;
 
@@ -99,29 +101,24 @@ public final class NotChat extends JavaPlugin {
         // TODO: remove
         this.getLifecycleManager().registerEventHandler(LifecycleEvents.COMMANDS, commands -> {
             NotCommand cmd = new NotCommand("devtest");
+
             cmd.onExecute(ctx -> {
-                ctx.getSource().getSender().sendMessage("devtest");
-                return 1;
-            });
+                CommandSender entity = ctx.getSource().getSender();
 
-            NotStringArg type = new NotStringArg("type");
-            type.setSuggestions(List.of("block", "item", "mob", "biome"));
-            type.onExecute(ctx -> {
-                String t = type.get(ctx);
+                ChatF message1 = ChatF.of("Hello, %player_name%!")
+                    .withPlayer((Player) entity);
+                entity.sendMessage(message1.build());
 
-                List<String> stuff = List.of();
-                if (t.equals("block")) stuff = MinecraftStuff.getInstance().blockIdNames;
-                if (t.equals("item")) stuff = MinecraftStuff.getInstance().itemIdNames;
-                if (t.equals("mob")) stuff = MinecraftStuff.getInstance().entityIdNames;
-                if (t.equals("biome")) stuff = MinecraftStuff.getInstance().biomeIdNames;
+                ChatF message2 = ChatF.of("Your position is: %player_x%, %player_y%, %player_z%")
+                    .withPlayer((Player) entity);
+                entity.sendMessage(message2.build());
 
-                for (String s : stuff) {
-                    ctx.getSource().getSender().sendMessage(s);
-                }
+                ChatF message3 = ChatF.of("Target position is: %target_x%, %target_y%, %target_z%")
+                    .withTargetPlayer((Player) entity);
+                entity.sendMessage(message3.build());
 
                 return 1;
             });
-            cmd.addArg(type);
 
             commands.registrar().register(cmd.build());
         });

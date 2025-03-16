@@ -14,7 +14,7 @@ import java.util.function.Function;
 public abstract class Base {
     public final String name;
     public HashMap<String, NotArgument<?>> arguments = new HashMap<>();
-    @Nullable public Function<CommandContext<CommandSourceStack>,Integer> executor;
+    public Function<CommandContext<CommandSourceStack>,Integer> executor = (ctx) -> 1;
     public List<String> suggestions = List.of();
     @Nullable public String permission;
 

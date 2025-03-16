@@ -30,9 +30,7 @@ public class NotCommand extends Base {
             }
             return true;
         });
-        if (executor != null) {
-            cmd = cmd.executes(context -> executor.apply(context));
-        }
+        cmd = cmd.executes(context -> executor.apply(context));
         return cmd.build();
     }
 

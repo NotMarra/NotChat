@@ -11,6 +11,7 @@ import com.notmarra.notchat.games.fast_type.FastTypeGame;
 import com.notmarra.notchat.games.hangman.HangmanGame;
 import com.notmarra.notchat.games.math.MathGame;
 import com.notmarra.notchat.games.number_guess.NumberGuessGame;
+import com.notmarra.notchat.games.true_or_false.TrueOrFalseGame;
 import com.notmarra.notchat.utils.commandHandler.NotCommand;
 import com.notmarra.notchat.utils.commandHandler.arguments.NotGreedyStringArg;
 import com.notmarra.notchat.utils.commandHandler.arguments.NotStringArg;
@@ -43,6 +44,7 @@ public class GameManager {
         gameConstructors.put(HangmanGame.GAME_ID, HangmanGame::new);
         gameConstructors.put(AnagramGame.GAME_ID, AnagramGame::new);
         gameConstructors.put(FastTypeGame.GAME_ID, FastTypeGame::new);
+        gameConstructors.put(TrueOrFalseGame.GAME_ID, TrueOrFalseGame::new);
     }
 
     public void startGameScheduler() {
@@ -59,7 +61,7 @@ public class GameManager {
         ChatGame game = gameConstructors.get(gameType).apply(plugin, gameType);
         if (game != null) {
             activeGames.put(player.getUniqueId(), game);
-            game.start(player);
+            game.initialize(player);
         }
     }
 
@@ -70,7 +72,7 @@ public class GameManager {
         ChatGame game = gameConstructors.get(randomGameType).apply(plugin, randomGameType);
         if (game != null) {
             activeGames.put(player.getUniqueId(), game);
-            game.start(player);
+            game.initialize(player);
         }
     }
 
@@ -169,7 +171,8 @@ public class GameManager {
                 return Command.SINGLE_SUCCESS;
             }
 
-            activeGames.get(player.getUniqueId()).onHint(player);
+            ChatGame game = activeGames.get(player.getUniqueId());
+            player.sendMessage(game.onHint(player).build());
 
             return Command.SINGLE_SUCCESS;
         });

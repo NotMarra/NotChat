@@ -11,11 +11,8 @@ import org.bukkit.plugin.java.JavaPlugin;
 
 import com.notmarra.notchat.games.ChatGame;
 import com.notmarra.notchat.games.ChatGameResponse;
-import com.notmarra.notchat.utils.ChatFormatter;
+import com.notmarra.notchat.utils.ChatF;
 import com.notmarra.notchat.utils.MinecraftStuff;
-
-import net.kyori.adventure.text.Component;
-import net.kyori.adventure.text.format.TextColor;
 
 public class HangmanGame extends ChatGame {
     public static String GAME_ID = "hangman";
@@ -121,20 +118,17 @@ public class HangmanGame extends ChatGame {
         return true;
     }
     
-    private Component getHangmanState() {
-        TextColor red = TextColor.color(255, 0, 0);
-        ChatFormatter nl = ChatFormatter.of("\n");
-
-        ChatFormatter piece1 = ChatFormatter.of("--#####")
+    private ChatF getHangmanState() {
+        ChatF piece1 = ChatF.of("--#####")
             .append(" ")
-            .append("Uhádni slovo a nenech se oběsit!");
+            .appendBold("Uhádni slovo a nenech se oběsit!");
 
-        ChatFormatter piece2 = ChatFormatter.of("--#---#");
+        ChatF piece2 = ChatF.of("--#---#");
 
-        ChatFormatter piece3 = ChatFormatter.empty();
+        ChatF piece3 = ChatF.empty();
         if (incorrectGuesses >= 1) {
             piece3.append("--");
-            piece3.append(Component.text("O", red));
+            piece3.append("O", ChatF.C_RED);
             piece3.append("---# ");
             piece3.append(getCurrentWordState());
         } else {
@@ -142,15 +136,15 @@ public class HangmanGame extends ChatGame {
             piece3.append(getCurrentWordState());
         }
 
-        ChatFormatter piece4 = ChatFormatter.empty();
+        ChatF piece4 = ChatF.empty();
         if (incorrectGuesses >= 2) {
             piece4.append("-");
-            piece4.append(Component.text("/", red));
+            piece4.append("/", ChatF.C_RED);
             if (incorrectGuesses >= 4) {
-                piece4.append(Component.text("O\\", red));
+                piece4.append("O\\", ChatF.C_RED);
                 piece4.append("--#");
             } else if (incorrectGuesses >= 3) {
-                piece4.append(Component.text("O", red));
+                piece4.append("O", ChatF.C_RED);
                 piece4.append("---#");
             } else {
                 piece4.append("----#");
@@ -160,17 +154,17 @@ public class HangmanGame extends ChatGame {
         }
 
         List<CharSequence> incorrect = getIncorrectGuesses();
-        ChatFormatter piece5 = ChatFormatter.empty();
+        ChatF piece5 = ChatF.empty();
         String help1 = "";
         if (!incorrect.isEmpty()) {
             help1 = "Špatně: " + String.join(", ", incorrect);
         }
         if (incorrectGuesses >= 5) {
             piece5.append("-");
-            piece5.append(Component.text("/", red));
+            piece5.append("/", ChatF.C_RED);
             if (incorrectGuesses >= 6) {
                 piece5.append("-");
-                piece5.append(Component.text("\\", red));
+                piece5.append("\\", ChatF.C_RED);
                 piece5.append("--# ");
             } else {
                 piece5.append("---# ");
@@ -181,11 +175,12 @@ public class HangmanGame extends ChatGame {
             piece5.append(help1);
         }
 
-        ChatFormatter piece6 = ChatFormatter.of("#######")
+        ChatF piece6 = ChatF.of("#######")
             .append(" ")
-            .append("/answer <písmeno/slovo>");
+            .appendBold("/answer <písmeno/slovo>");
 
-        return ChatFormatter.empty()
+        ChatF nl = ChatF.of("\n");
+        return ChatF.empty()
             .appendMany(
                 piece1, nl,
                 piece2, nl,
@@ -193,33 +188,31 @@ public class HangmanGame extends ChatGame {
                 piece4, nl,
                 piece5, nl,
                 piece6
-            )
-            .build();
-    }
-
-    private void printGameState(Player player) {
-        player.sendMessage(Component.text("[[[ HANGMAN ]]]", TextColor.color(30, 144, 255)));
-        player.sendMessage(getHangmanState());
-        player.sendMessage("Word: " + word);
+            );
     }
 
     @Override
-    public void onHint(Player player) {
-        player.sendMessage("Žádná nápověda pro tuto hru.");
+    public ChatF getTitle() {
+        return ChatF.ofBold("[[[ HANGMAN ]]]", ChatF.C_DODGERBLUE);
     }
 
     @Override
-    public String getGameSummary() {
+    public ChatF onHint(Player player) {
+        return ChatF.of("Žádná nápověda pro tuto hru.");
+    }
+
+    @Override
+    public ChatF getGameSummary() {
         if (isWordGuessed()) {
-            return "Uhádl jsi slovo '" + word + "' s " + incorrectGuesses + " špatnými pokusy!";
+            return ChatF.of("Uhádl jsi slovo '" + word + "' s " + incorrectGuesses + " špatnými pokusy!");
         } else {
-            return "Nepodařilo se ti uhádnout slovo '" + word + "'. Příště se ti to možná podaří!";
+            return ChatF.of("Nepodařilo se ti uhádnout slovo '" + word + "'. Příště se ti to možná podaří!");
         }
     }
     
     @Override
     public void start(Player player) {
-        printGameState(player);
+        player.sendMessage(getHangmanState().build());
     }
     
     @Override
@@ -250,7 +243,7 @@ public class HangmanGame extends ChatGame {
             }
         }
         
-        printGameState(player);
+        player.sendMessage(getHangmanState().build());
         
         if (isWordGuessed()) {
             return ChatGameResponse.endGameCorrect();

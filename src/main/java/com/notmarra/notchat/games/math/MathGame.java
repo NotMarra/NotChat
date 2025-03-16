@@ -5,9 +5,7 @@ import org.bukkit.plugin.java.JavaPlugin;
 
 import com.notmarra.notchat.games.ChatGame;
 import com.notmarra.notchat.games.ChatGameResponse;
-
-import net.kyori.adventure.text.Component;
-import net.kyori.adventure.text.format.TextColor;
+import com.notmarra.notchat.utils.ChatF;
 
 public class MathGame extends ChatGame {
     public static String GAME_ID = "math";
@@ -20,22 +18,33 @@ public class MathGame extends ChatGame {
     }
 
     @Override
-    public void onHint(Player player) {
-        player.sendMessage("Žádná nápověda pro tuto hru.");
+    public ChatF getTitle() {
+        return ChatF.ofBold("[[[ MATH ]]]", ChatF.C_DODGERBLUE);
     }
 
     @Override
-    public String getGameSummary() {
+    public ChatF onHint(Player player) {
+        return ChatF.of("Žádná nápověda pro tuto hru.");
+    }
+
+    @Override
+    public ChatF getGameSummary() {
         String problem = mathProblem.getPrettyPrintedProblem();
         problem = problem.replace("?", String.valueOf(mathProblem.getCorrectAnswer()));
-        return "Výsledek: " + problem;
+        return ChatF.ofBold("Výsledek: ").append(problem);
     }
 
     @Override
     public void start(Player player) {
-        player.sendMessage(Component.text("[[[ MATH ]]]", TextColor.color(30, 144, 255)));
-        player.sendMessage("Vypočítej správně: " + mathProblem.getPrettyPrintedProblem());
-        player.sendMessage("Obtížnost: " + mathProblem.getDifficulty().getName());
+        ChatF problem = ChatF.empty()
+            .append("Vypočítej správně: ")
+            .append(mathProblem.getPrettyPrintedProblem());
+        player.sendMessage(problem.build());
+
+        ChatF difficulty = ChatF.empty()
+            .append("Obtížnost: ")
+            .append(mathProblem.getDifficulty().getName());
+        player.sendMessage(difficulty.build());
     }
 
     @Override

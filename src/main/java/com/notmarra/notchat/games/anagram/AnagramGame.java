@@ -9,13 +9,8 @@ import org.bukkit.plugin.java.JavaPlugin;
 
 import com.notmarra.notchat.games.ChatGame;
 import com.notmarra.notchat.games.ChatGameResponse;
-import com.notmarra.notchat.utils.ChatFormatter;
+import com.notmarra.notchat.utils.ChatF;
 import com.notmarra.notchat.utils.MinecraftStuff;
-
-import net.kyori.adventure.text.Component;
-import net.kyori.adventure.text.format.Style;
-import net.kyori.adventure.text.format.TextColor;
-import net.kyori.adventure.text.format.TextDecoration;
 
 public class AnagramGame extends ChatGame {
     public static String GAME_ID = "anagram";
@@ -120,54 +115,84 @@ public class AnagramGame extends ChatGame {
     }
 
     @Override
-    public void onHint(Player player) {
+    public ChatF getTitle() {
+        return ChatF.ofBold("[[[ ANAGRAM ]]]", ChatF.C_DODGERBLUE);
+    }
+
+    @Override
+    public ChatF onHint(Player player) {
         hintsUsed++;
 
         if (hintsUsed == 1) {
-            player.sendMessage("První písmeno je: " + originalWord.charAt(0));
+            return ChatF.empty()
+                .appendBold("[HINT 1]")
+                .append(" ")
+                .append("První písmeno je: " + originalWord.charAt(0));
         } else if (hintsUsed == 2) {
             if (originalWord.contains(" ")) {
                 int spaceIndex = originalWord.indexOf(' ');
-                player.sendMessage("První písmeno druhého slova je: " + originalWord.charAt(spaceIndex + 1));
+                return ChatF.empty()
+                    .appendBold("[HINT 2]")
+                    .append(" ")
+                    .append("První písmeno druhého slova je: " + originalWord.charAt(spaceIndex + 1));
             } else {
-                player.sendMessage("Druhé písmeno je: " + originalWord.charAt(1));
+                return ChatF.empty()
+                    .appendBold("[HINT 2]")
+                    .append(" ")
+                    .append("Druhé písmeno je: " + originalWord.charAt(1));
             }
         } else if (hintsUsed == 3) {
+            ChatF hintMessage = ChatF.empty()
+                .appendBold("[HINT 3]")
+                .append(" ")
+                .append("Typ slova: ");
+
             if (MinecraftStuff.getInstance().blockIdNames.contains(originalWord)) {
-                player.sendMessage("Je to blok!");
+                return hintMessage.append("BLOK");
             } else if (MinecraftStuff.getInstance().itemIdNames.contains(originalWord)) {
-                player.sendMessage("Je to item!");
+                return hintMessage.append("ITEM");
             } else if (MinecraftStuff.getInstance().entityIdNames.contains(originalWord)) {
-                player.sendMessage("Je to mob!");
+                return hintMessage.append("MOB");
             } else if (MinecraftStuff.getInstance().biomeIdNames.contains(originalWord)) {
-                player.sendMessage("Je to biome!");
+                return hintMessage.append("BIOME");
             } else {
-                player.sendMessage("Nemohu detekovat typ slova.");
+                return ChatF.ofBold("Nemohu detekovat typ slova.", ChatF.C_RED);
             }
+        } else if (hintsUsed == 4) {
+            return ChatF.empty()
+                .appendBold("[OPRAVDU?]")
+                .append(" ")
+                .append("Napiš ")
+                .appendBold("/hint")
+                .append(" pro zobrazení celého slova.");
         } else {
-            player.sendMessage("Slovo je: " + originalWord);
+            return ChatF.empty()
+                .appendBold("[HINT 4]")
+                .append(" ")
+                .append("Slovo je: ")
+                .appendBold(originalWord, ChatF.C_GREEN);
         }
     }
 
     @Override
-    public String getGameSummary() {
+    public ChatF getGameSummary() {
         if (solved) {
-            return "Správně jsi uhádl slovo '" + originalWord + "'!";
+            return ChatF.of("Správně jsi uhádl slovo '" + originalWord + "'!");
         } else {
-            return "Nepodařilo se ti uhádnout slovo '" + originalWord + "' s " + MAX_INCORRECT_GUESSES + " pokusy.";
+            return ChatF.of("Nepodařilo se ti uhádnout slovo '" + originalWord + "' s " + MAX_INCORRECT_GUESSES + " pokusy.");
         }
     }
     
     @Override
     public void start(Player player) {
-        player.sendMessage(Component.text("[[[ ANAGRAM ]]]", TextColor.color(30, 144, 255)));
-        player.sendMessage("Najdi správné slovo: " + scrambledWord);
+        ChatF scrambledMessage = ChatF.of("Přeuspořádej slovo: ")
+            .appendBold(scrambledWord);
+        player.sendMessage(scrambledMessage.build());
 
-        ChatFormatter hintMessage = ChatFormatter.empty();
-        hintMessage.append(Component.text("/answer <slovo>", Style.style(TextDecoration.BOLD)));
-        hintMessage.append(Component.text(" nebo "));
-        hintMessage.append(Component.text("/hint", Style.style(TextDecoration.BOLD)));
-        hintMessage.append(Component.text(" pro nápovědu."));
+        ChatF hintMessage = ChatF.ofBold("/answer <slovo>")
+            .append(" nebo ")
+            .appendBold("/hint")
+            .append(" pro nápovědu.");
         player.sendMessage(hintMessage.build());
     }
     
