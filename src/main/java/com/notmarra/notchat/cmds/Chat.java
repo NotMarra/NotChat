@@ -1,11 +1,11 @@
 package com.notmarra.notchat.cmds;
 
 import com.mojang.brigadier.Command;
-import com.notmarra.notchat.utils.ChatF;
+import com.notmarra.notlib.utils.ChatF;
 import com.notmarra.notchat.utils.Config;
-import com.notmarra.notchat.utils.commandHandler.NotCommand;
-import com.notmarra.notchat.utils.commandHandler.arguments.NotPlayerArg;
-import com.notmarra.notchat.utils.commandHandler.arguments.NotStringArg;
+import com.notmarra.notlib.utils.command.NotCommand;
+import com.notmarra.notlib.utils.command.arguments.NotPlayerArg;
+import com.notmarra.notlib.utils.command.arguments.NotStringArg;
 
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;

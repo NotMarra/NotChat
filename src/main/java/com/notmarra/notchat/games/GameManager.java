@@ -12,9 +12,9 @@ import com.notmarra.notchat.games.hangman.HangmanGame;
 import com.notmarra.notchat.games.math.MathGame;
 import com.notmarra.notchat.games.number_guess.NumberGuessGame;
 import com.notmarra.notchat.games.true_or_false.TrueOrFalseGame;
-import com.notmarra.notchat.utils.commandHandler.NotCommand;
-import com.notmarra.notchat.utils.commandHandler.arguments.NotGreedyStringArg;
-import com.notmarra.notchat.utils.commandHandler.arguments.NotStringArg;
+import com.notmarra.notlib.utils.command.NotCommand;
+import com.notmarra.notlib.utils.command.arguments.NotGreedyStringArg;
+import com.notmarra.notlib.utils.command.arguments.NotStringArg;
 
 import java.util.HashMap;
 import java.util.List;

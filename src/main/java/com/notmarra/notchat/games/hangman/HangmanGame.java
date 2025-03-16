@@ -11,7 +11,7 @@ import org.bukkit.plugin.java.JavaPlugin;
 
 import com.notmarra.notchat.games.ChatGame;
 import com.notmarra.notchat.games.ChatGameResponse;
-import com.notmarra.notchat.utils.ChatF;
+import com.notmarra.notlib.utils.ChatF;
 import com.notmarra.notchat.utils.MinecraftStuff;
 
 public class HangmanGame extends ChatGame {

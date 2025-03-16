@@ -5,7 +5,7 @@ import org.bukkit.plugin.java.JavaPlugin;
 
 import com.notmarra.notchat.games.ChatGame;
 import com.notmarra.notchat.games.ChatGameResponse;
-import com.notmarra.notchat.utils.ChatF;
+import com.notmarra.notlib.utils.ChatF;
 
 public class MathGame extends ChatGame {
     public static String GAME_ID = "math";

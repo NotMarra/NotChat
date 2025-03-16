@@ -1,12 +1,15 @@
 name: NotChat
-version: '0.1-DEV'
+version: "0.1-DEV"
 main: com.notmarra.notchat.NotChat
 authors:
   - "NotMarra"
   - "TheNoiselessNoise"
-api-version: '1.21'
+api-version: "1.21"
 dependencies:
   server:
+    NotLib:
+      load: BEFORE
+      required: true
     PlaceholderAPI:
       load: BEFORE
       required: false

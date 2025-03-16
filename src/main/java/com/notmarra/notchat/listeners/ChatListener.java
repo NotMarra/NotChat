@@ -1,7 +1,7 @@
 package com.notmarra.notchat.listeners;
 
 import com.notmarra.notchat.NotChat;
-import com.notmarra.notchat.utils.ChatF;
+import com.notmarra.notlib.utils.ChatF;
 
 import io.papermc.paper.event.player.AsyncChatEvent;
 import org.bukkit.entity.Player;
@@ -27,6 +27,12 @@ public class ChatListener implements Listener {
 
         if (NotChat.hasVault()) {
             String group = NotChat.getPerms().getPrimaryGroup(player);
+            NotChat.getInstance().getLogger().info("Group: " + group);
+
+            if (group == null) {
+                sendMessage(player, "default", event);
+                return;
+            }
 
             if (chat_formats.containsKey(group)) {
                 String format = chat_formats.get(group);

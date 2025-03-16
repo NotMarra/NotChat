@@ -1,6 +1,6 @@
 package com.notmarra.notchat.games;
 
-import com.notmarra.notchat.utils.ChatF;
+import com.notmarra.notlib.utils.ChatF;
 import com.notmarra.notchat.utils.ConfigFiles;
 
 import net.kyori.adventure.text.Component;

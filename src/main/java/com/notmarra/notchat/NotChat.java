@@ -2,10 +2,10 @@ package com.notmarra.notchat;
 
 import com.notmarra.notchat.games.GameManager;
 import com.notmarra.notchat.listeners.ChatListener;
-import com.notmarra.notchat.utils.ChatF;
+import com.notmarra.notlib.utils.ChatF;
 import com.notmarra.notchat.utils.Config;
 import com.notmarra.notchat.utils.MinecraftStuff;
-import com.notmarra.notchat.utils.commandHandler.NotCommand;
+import com.notmarra.notlib.utils.command.NotCommand;
 
 import io.papermc.paper.plugin.lifecycle.event.types.LifecycleEvents;
 import net.milkbowl.vault.permission.Permission;
