@@ -4,6 +4,7 @@ modules:
   local_chat: true
   chat_games: true
   tags: true
+  tab_complete: true
   chat_color: true # TODO: Add this module
   ping: true # TODO: Add this module
   chat_filter: true # TODO: Add this module

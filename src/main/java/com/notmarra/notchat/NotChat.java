@@ -2,6 +2,7 @@ package com.notmarra.notchat;
 
 import com.notmarra.notchat.games.GameManager;
 import com.notmarra.notchat.listeners.ChatListener;
+import com.notmarra.notchat.listeners.TabCompletionManager;
 import com.notmarra.notlib.utils.ChatF;
 import com.notmarra.notchat.utils.Config;
 import com.notmarra.notchat.utils.MinecraftStuff;
@@ -28,6 +29,7 @@ public final class NotChat extends JavaPlugin {
     public static ConfigurationSection chat_formats;
     private static Permission perms = null;
     private static GameManager gameManager;
+    private TabCompletionManager tabCompletionManager;
 
     private static final List<String> CONFIG_FILES = List.of(
         "config.yml",
@@ -73,6 +75,16 @@ public final class NotChat extends JavaPlugin {
             chat_formats = Config.getConfigurationSection("chat_formats");
             this.getServer().getPluginManager().registerEvents(new ChatListener(this), this);
             this.getLogger().info("Chat format module enabled");
+        }
+
+        if (Config.getBoolean("modules.tab_complete")) {
+            tabCompletionManager = new TabCompletionManager(this);
+        
+            if (tabCompletionManager.initialize()) {
+                getLogger().info("TabCompletionManager byl úspěšně aktivován");
+            } else {
+                getLogger().warning("TabCompletionManager nemohl být aktivován (Vault nenalezen nebo nefunkční)");
+            }
         }
 
         if (Config.getBoolean("modules.chat_games")) {
