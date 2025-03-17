@@ -3,13 +3,11 @@ package com.notmarra.notchat.games;
 import com.notmarra.notlib.utils.ChatF;
 import com.notmarra.notchat.utils.ConfigFiles;
 
-import net.kyori.adventure.text.Component;
-import net.kyori.adventure.text.format.TextColor;
-
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.Player;
 import org.bukkit.plugin.java.JavaPlugin;
 
+import java.util.ArrayList;
 import java.util.List;
 
 
@@ -38,7 +36,7 @@ public abstract class ChatGame {
     }
 
     public void initialize(Player player) {
-        player.sendMessage(getTitle().withPlayer(player).build());
+        getTitle().sendTo(player);
         start(player);
     }
 
@@ -48,18 +46,31 @@ public abstract class ChatGame {
 
     public abstract ChatGameResponse onAnswer(Player player, String answer);
 
+    public void end(Player player, ChatGameResponse response) {
+        if (response.correct) {
+            endCorrect(player, response);
+        } else {
+            endIncorrect(player, response);
+        }
+    }
+
     // NOTE: you should not override, but can i stop you from doing it?
-    public void endCorrect(Player player) {
-        player.sendMessage(getGameSummary().withPlayer(player).build());
-        player.sendMessage(Component.text("===> ZÍSKÁVÁŠ ODMĚNU <===", TextColor.color(0, 255, 0)));
+    public void endCorrect(Player player, ChatGameResponse response) {
+        getGameSummary().sendTo(player);
+
+        ChatF.of("===> ZÍSKÁVÁŠ ODMĚNU <===", ChatF.C_GREEN).sendTo(player);
+        
+        List<String> rewardCommands = new ArrayList<>(this.rewardCommands);
+        rewardCommands.addAll(response.rewardCommands);
+
         for (String command : rewardCommands) {
             player.performCommand(ChatF.of(command).withPlayer(player).buildString());
         }
     }
 
     // NOTE: you can override
-    public void endIncorrect(Player player) {
-        player.sendMessage(getGameSummary().withPlayer(player).build());
-        player.sendMessage(Component.text("===> SMŮLA <===", TextColor.color(255, 0, 0)));
+    public void endIncorrect(Player player, ChatGameResponse response) {
+        getGameSummary().sendTo(player);
+        ChatF.of("===> SMŮLA <===", ChatF.C_RED).sendTo(player);
     }
 }

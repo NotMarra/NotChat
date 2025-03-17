@@ -22,15 +22,15 @@ public class Chat {
             NotCommand cmd = new NotCommand(alias);
 
             cmd.onExecute((ctx) -> {
-                ChatF message = ChatF.of(Config.getString("msg.message_usage"));
-                ctx.getSource().getSender().sendMessage(message.build());
+                Entity entity = ctx.getSource().getExecutor();
+                ChatF.of(Config.getString("msg.message_usage")).sendTo(entity);
                 return Command.SINGLE_SUCCESS;
             });
 
             NotPlayerArg players = new NotPlayerArg("player");
             players.onExecute(ctx -> {
-                ChatF message = ChatF.of(Config.getString("msg.message_usage"));
-                ctx.getSource().getSender().sendMessage(message.build());
+                Entity entity = ctx.getSource().getExecutor();
+                ChatF.of(Config.getString("msg.message_usage")).sendTo(entity);
                 return Command.SINGLE_SUCCESS;
             });
 
@@ -44,18 +44,18 @@ public class Chat {
 
                 for (Player targetPlayer : targetPlayers) {
                     // Send message to sender
-                    ChatF senderMessage = ChatF.of(Config.getString("msg.message_sender"))
+                    ChatF.of(Config.getString("msg.message_sender"))
                         .withPlayer((Player) senderEntity)
                         .withTargetPlayer(targetPlayer)
-                        .replace(ChatF.K_MESSAGE, msg);
-                    senderEntity.sendMessage(senderMessage.build());
+                        .replace(ChatF.K_MESSAGE, msg)
+                        .sendTo(senderEntity);
 
                     // Send message to receiver
-                    ChatF formatter = ChatF.of(Config.getString("msg.message_receiver"))
+                    ChatF.of(Config.getString("msg.message_receiver"))
                         .withPlayer((Player) senderEntity)
                         .withTargetPlayer(targetPlayer)
-                        .replace(ChatF.K_MESSAGE, msg);
-                    targetPlayer.sendMessage(formatter.build());
+                        .replace(ChatF.K_MESSAGE, msg)
+                        .sendTo(targetPlayer);
                 }
 
                 return Command.SINGLE_SUCCESS;

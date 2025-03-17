@@ -7,12 +7,12 @@ authors:
 api-version: "1.21"
 dependencies:
   server:
-    NotLib:
-      load: BEFORE
-      required: true
     PlaceholderAPI:
       load: BEFORE
       required: false
     Vault:
       load: BEFORE
       required: false
+    NotLib:
+      load: BEFORE
+      required: true

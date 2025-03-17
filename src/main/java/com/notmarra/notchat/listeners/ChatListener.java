@@ -22,26 +22,32 @@ public class ChatListener implements Listener {
         if (NotChat.hasVault()) {
             String group = NotChat.getPerms().getPrimaryGroup(player);
 
+            if (group == null) {
+                sendMessage(player, "default", event);
+                return;
+            }
+
             if (NotChat.getChatFormats().contains(group)) {
-                String format = NotChat.getChatFormats().getString(group);
-                sendMessage(player, format, event);
+                sendMessage(player, group, event);
                 return;
             }
         } else {
             for (String type : NotChat.getChatFormats().getKeys(false)) {
                 if (player.hasPermission(type)) {
-                    String format = NotChat.getChatFormats().getString(type);
-                    sendMessage(player, format, event);
+                    sendMessage(player, type, event);
                     return;
                 }
             }
         }
 
-        String format = NotChat.getChatFormats().getString("default");
-        sendMessage(player, format, event);
+        sendMessage(player, "default", event);
     }
 
-    private void sendMessage(Player player, String format, AsyncChatEvent event) {
+    private void sendMessage(Player player, String type, AsyncChatEvent event) {
+        String format = NotChat.getChatFormats().getString(type);
+
+        // TODO: if format is null (invalid config file) use some hardcoded fallback
+
         ChatF message = ChatF.empty()
             .append(format)
             .withPlayer(player)
@@ -51,7 +57,7 @@ public class ChatListener implements Listener {
             int radius = plugin.getConfig().getInt("local_chat.radius");
             for (Player p : player.getWorld().getPlayers()) {
                 if (p.getLocation().distance(player.getLocation()) <= radius) {
-                    p.sendMessage(message.build());
+                    message.sendTo(p);
                 }
             }
         } else {

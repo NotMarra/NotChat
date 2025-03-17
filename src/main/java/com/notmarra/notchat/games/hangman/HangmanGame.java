@@ -212,7 +212,7 @@ public class HangmanGame extends ChatGame {
     
     @Override
     public void start(Player player) {
-        player.sendMessage(getHangmanState().build());
+        getHangmanState().sendTo(player);
     }
     
     @Override
@@ -225,7 +225,7 @@ public class HangmanGame extends ChatGame {
                 for (char c : word.toCharArray()) {
                     guessedLetters.add(Character.toLowerCase(c));
                 }
-                return ChatGameResponse.endGameCorrect();
+                return ChatGameResponse.endCorrect();
             } else {
                 incorrectGuesses++;
             }
@@ -243,12 +243,12 @@ public class HangmanGame extends ChatGame {
             }
         }
         
-        player.sendMessage(getHangmanState().build());
+        getHangmanState().sendTo(player);
         
         if (isWordGuessed()) {
-            return ChatGameResponse.endGameCorrect();
+            return ChatGameResponse.endCorrect();
         } else if (incorrectGuesses >= MAX_INCORRECT_GUESSES) {
-            return ChatGameResponse.endGameIncorrect();
+            return ChatGameResponse.endIncorrect();
         }
         
         return ChatGameResponse.incorrect();

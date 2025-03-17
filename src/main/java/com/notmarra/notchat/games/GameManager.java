@@ -12,6 +12,7 @@ import com.notmarra.notchat.games.hangman.HangmanGame;
 import com.notmarra.notchat.games.math.MathGame;
 import com.notmarra.notchat.games.number_guess.NumberGuessGame;
 import com.notmarra.notchat.games.true_or_false.TrueOrFalseGame;
+import com.notmarra.notlib.utils.ChatF;
 import com.notmarra.notlib.utils.command.NotCommand;
 import com.notmarra.notlib.utils.command.arguments.NotGreedyStringArg;
 import com.notmarra.notlib.utils.command.arguments.NotStringArg;
@@ -83,12 +84,7 @@ public class GameManager {
 
             if (response.endingGame) {
                 activeGames.remove(player.getUniqueId());
-
-                if (response.correct) {
-                    game.endCorrect(player);
-                } else {
-                    game.endIncorrect(player);
-                }
+                game.end(player, response);
             }
         }
     }
@@ -116,13 +112,13 @@ public class GameManager {
             }
 
             if (hasActiveGame(player)) {                    
-                player.sendMessage("Máš již aktivní hru");
+                ChatF.of("Máš již aktivní hru").sendTo(player);
                 return Command.SINGLE_SUCCESS;
             }
 
             String gameType = gameTypeArg.get(ctx).trim();
             if (!getGameTypes().contains(gameType)) {
-                player.sendMessage("Neznámý typ hry: " + gameType);
+                ChatF.of("Neznámý typ hry: " + gameType).sendTo(player);
                 return Command.SINGLE_SUCCESS;
             }
 
@@ -145,12 +141,12 @@ public class GameManager {
             }
 
             if (!hasActiveGame(player)) {
-                player.sendMessage("Nemáš aktivní hru");
+                ChatF.of("Nemáš aktivní hru").sendTo(player);
                 return Command.SINGLE_SUCCESS;
             }
 
             activeGames.remove(player.getUniqueId());
-            player.sendMessage("Hra ukončena");
+            ChatF.of("Hra ukončena").sendTo(player);
             return Command.SINGLE_SUCCESS;
         });
 
@@ -167,12 +163,12 @@ public class GameManager {
             }
 
             if (!hasActiveGame(player)) {
-                player.sendMessage("Nemáš aktivní hru");
+                ChatF.of("Nemáš aktivní hru").sendTo(player);
                 return Command.SINGLE_SUCCESS;
             }
 
             ChatGame game = activeGames.get(player.getUniqueId());
-            player.sendMessage(game.onHint(player).build());
+            game.onHint(player).sendTo(player);
 
             return Command.SINGLE_SUCCESS;
         });
@@ -183,7 +179,8 @@ public class GameManager {
     public NotCommand answerCommand() {
         NotCommand answerCmd = new NotCommand("answer");
         answerCmd.onExecute(ctx -> {
-            ctx.getSource().getSender().sendMessage("Musíš zadat odpověď");
+            Entity entity = ctx.getSource().getExecutor();
+            ChatF.of("Musíš zadat odpověď").sendTo(entity);
             return Command.SINGLE_SUCCESS;
         });
 
@@ -195,18 +192,18 @@ public class GameManager {
             }
 
             if (!hasActiveGame(player)) {
-                player.sendMessage("Nemáš aktivní hru");
+                ChatF.of("Nemáš aktivní hru").sendTo(player);
                 return Command.SINGLE_SUCCESS;
             }
 
             String answer = answerArg.get(ctx);
 
             if (answer.trim().isEmpty()) {
-                player.sendMessage("Neplatná odpověď");
+                ChatF.of("Neplatná odpověď").sendTo(player);
                 return Command.SINGLE_SUCCESS;
             }
 
-            handlePlayerAnswer(player, answerArg.get(ctx));
+            handlePlayerAnswer(player, answer);
             return Command.SINGLE_SUCCESS;
         });
 

@@ -51,6 +51,8 @@ true_or_false:
   reward_commands:
     - "give %player_name% diamond 1"
   settings:
+    custom_question_probability: 0 # 0-100
+    show_correct_answer_on_fail: true
     minecraft_blocks: true
     minecraft_items: true
     minecraft_mobs: true
@@ -59,3 +61,8 @@ true_or_false:
       notchat:
         question: "Is NotChat a chat plugin?"
         answer: true
+        category: "notchat"
+        hint: "NotChat is a chat plugin."
+        explanation: "Because NotChat is a chat plugin."
+        reward_commands:
+          - "give %player_name% diamond 1"

@@ -11,9 +11,8 @@ import com.notmarra.notlib.utils.command.NotCommand;
 import io.papermc.paper.plugin.lifecycle.event.types.LifecycleEvents;
 import net.milkbowl.vault.permission.Permission;
 import org.bukkit.Bukkit;
-import org.bukkit.command.CommandSender;
 import org.bukkit.configuration.ConfigurationSection;
-import org.bukkit.entity.Player;
+import org.bukkit.entity.Entity;
 import org.bukkit.plugin.RegisteredServiceProvider;
 import org.bukkit.plugin.java.JavaPlugin;
 
@@ -111,19 +110,11 @@ public final class NotChat extends JavaPlugin {
             NotCommand cmd = new NotCommand("devtest");
 
             cmd.onExecute(ctx -> {
-                CommandSender entity = ctx.getSource().getSender();
+                Entity entity = ctx.getSource().getExecutor();
 
-                ChatF message1 = ChatF.of("Hello, %player_name%!")
-                    .withPlayer((Player) entity);
-                entity.sendMessage(message1.build());
-
-                ChatF message2 = ChatF.of("Your position is: %player_x%, %player_y%, %player_z%")
-                    .withPlayer((Player) entity);
-                entity.sendMessage(message2.build());
-
-                ChatF message3 = ChatF.of("Target position is: %target_x%, %target_y%, %target_z%")
-                    .withTargetPlayer((Player) entity);
-                entity.sendMessage(message3.build());
+                ChatF.of("Hello, %player_name%!").sendTo(entity);
+                ChatF.of("Your position is: %player_x%, %player_y%, %player_z%").sendTo(entity);
+                ChatF.of("Target position is: %target_x%, %target_y%, %target_z%").sendTo(entity);
 
                 return 1;
             });

@@ -15,11 +15,8 @@ import com.notmarra.notchat.utils.MinecraftStuff;
 public class AnagramGame extends ChatGame {
     public static String GAME_ID = "anagram";
 
-    private static final int MAX_INCORRECT_GUESSES = 6;
-    
     private String originalWord;
     private String scrambledWord;
-    private int attempts;
     private int hintsUsed;
     private boolean solved;
 
@@ -123,55 +120,47 @@ public class AnagramGame extends ChatGame {
     public ChatF onHint(Player player) {
         hintsUsed++;
 
-        if (hintsUsed == 1) {
-            return ChatF.empty()
-                .appendBold("[HINT 1]")
-                .append(" ")
-                .append("První písmeno je: " + originalWord.charAt(0));
-        } else if (hintsUsed == 2) {
-            if (originalWord.contains(" ")) {
-                int spaceIndex = originalWord.indexOf(' ');
-                return ChatF.empty()
-                    .appendBold("[HINT 2]")
-                    .append(" ")
-                    .append("První písmeno druhého slova je: " + originalWord.charAt(spaceIndex + 1));
-            } else {
-                return ChatF.empty()
-                    .appendBold("[HINT 2]")
-                    .append(" ")
-                    .append("Druhé písmeno je: " + originalWord.charAt(1));
-            }
-        } else if (hintsUsed == 3) {
-            ChatF hintMessage = ChatF.empty()
-                .appendBold("[HINT 3]")
-                .append(" ")
-                .append("Typ slova: ");
+        if (hintsUsed < 4) {
+            ChatF hint = ChatF.empty()
+                .appendBold("[HINT " + hintsUsed + "]", ChatF.C_GOLD)
+                .append(" ");
 
-            if (MinecraftStuff.getInstance().blockIdNames.contains(originalWord)) {
-                return hintMessage.append("BLOK");
-            } else if (MinecraftStuff.getInstance().itemIdNames.contains(originalWord)) {
-                return hintMessage.append("ITEM");
-            } else if (MinecraftStuff.getInstance().entityIdNames.contains(originalWord)) {
-                return hintMessage.append("MOB");
-            } else if (MinecraftStuff.getInstance().biomeIdNames.contains(originalWord)) {
-                return hintMessage.append("BIOME");
-            } else {
-                return ChatF.ofBold("Nemohu detekovat typ slova.", ChatF.C_RED);
+            if (hintsUsed == 1) {
+                hint.append("Počáteční písmeno je: ");
+                hint.appendBold(String.valueOf(originalWord.charAt(0)), ChatF.C_GOLD);
             }
-        } else if (hintsUsed == 4) {
-            return ChatF.empty()
-                .appendBold("[OPRAVDU?]")
-                .append(" ")
-                .append("Napiš ")
-                .appendBold("/hint")
-                .append(" pro zobrazení celého slova.");
-        } else {
-            return ChatF.empty()
-                .appendBold("[HINT 4]")
-                .append(" ")
-                .append("Slovo je: ")
-                .appendBold(originalWord, ChatF.C_GREEN);
+
+            if (hintsUsed == 2) {
+                if (originalWord.contains(" ")) {
+                    int spaceIndex = originalWord.indexOf(' ');
+                    hint.append("První písmeno druhého slova je: ");
+                    hint.appendBold(String.valueOf(originalWord.charAt(spaceIndex + 1)), ChatF.C_GOLD);
+                } else {
+                    hint.append("Druhé písmeno je: ");
+                    hint.appendBold(String.valueOf(originalWord.charAt(1)), ChatF.C_GOLD);
+                }
+            }
+
+            if (hintsUsed == 3) {
+                hint.append("Typ slova: ");
+    
+                if (MinecraftStuff.getInstance().blockIdNames.contains(originalWord)) {
+                    hint.appendBold("BLOK", ChatF.C_GOLD);
+                } else if (MinecraftStuff.getInstance().itemIdNames.contains(originalWord)) {
+                    hint.appendBold("ITEM", ChatF.C_GOLD);
+                } else if (MinecraftStuff.getInstance().entityIdNames.contains(originalWord)) {
+                    hint.appendBold("MOB", ChatF.C_GOLD);
+                } else if (MinecraftStuff.getInstance().biomeIdNames.contains(originalWord)) {
+                    hint.appendBold("BIOME", ChatF.C_GOLD);
+                } else {
+                    hint.appendBold("NEMOHU DETEKOVAT", ChatF.C_RED);
+                }
+            }
+
+            return hint;
         }
+
+        return ChatF.ofBold("Nemám žádné další nápovědy.", ChatF.C_RED);
     }
 
     @Override
@@ -179,38 +168,34 @@ public class AnagramGame extends ChatGame {
         if (solved) {
             return ChatF.of("Správně jsi uhádl slovo '" + originalWord + "'!");
         } else {
-            return ChatF.of("Nepodařilo se ti uhádnout slovo '" + originalWord + "' s " + MAX_INCORRECT_GUESSES + " pokusy.");
+            return ChatF.of("Nepodařilo se ti uhádnout slovo '" + originalWord + "'!");
         }
     }
     
     @Override
     public void start(Player player) {
-        ChatF scrambledMessage = ChatF.of("Přeuspořádej slovo: ")
-            .appendBold(scrambledWord);
-        player.sendMessage(scrambledMessage.build());
+        ChatF.empty()
+            .append("Přeuspořádej slovo: ")
+            .appendBold(scrambledWord, ChatF.C_GOLD)
+            .sendTo(player);
 
-        ChatF hintMessage = ChatF.ofBold("/answer <slovo>")
+        ChatF.empty()
+            .appendBold("/answer <slovo>", ChatF.C_LIGHTGRAY)
             .append(" nebo ")
-            .appendBold("/hint")
-            .append(" pro nápovědu.");
-        player.sendMessage(hintMessage.build());
+            .appendBold("/hint", ChatF.C_YELLOW)
+            .append(" pro nápovědu.")
+            .sendTo(player);
     }
     
     @Override
     public ChatGameResponse onAnswer(Player player, String answer) {
         answer = answer.trim().toUpperCase();
 
-        attempts++;
-
         if (answer.equalsIgnoreCase(originalWord)) {
             solved = true;
-            return ChatGameResponse.endGameCorrect();
+            return ChatGameResponse.endCorrect();
         }
 
-        if (attempts >= MAX_INCORRECT_GUESSES) {
-            return ChatGameResponse.endGameIncorrect();
-        }
-
-        return ChatGameResponse.incorrect();
+        return ChatGameResponse.endIncorrect();
     }
 }

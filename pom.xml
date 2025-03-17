@@ -97,7 +97,7 @@
         <dependency>
             <groupId>com.github.NotMarra</groupId>
             <artifactId>NotLib</artifactId>
-            <version>v0.1</version>
+            <version>c58c7b278be3ef65848251f3cca11e0ef7e0c1eb</version>
         </dependency>
     </dependencies>
 </project>

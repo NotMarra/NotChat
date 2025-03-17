@@ -2,9 +2,10 @@ package com.notmarra.notchat.games.true_or_false;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
 import java.util.Random;
 import java.util.Set;
+
+import javax.annotation.Nullable;
 
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.Player;
@@ -17,52 +18,84 @@ import com.notmarra.notlib.utils.ChatF;
 public class TrueOrFalseGame extends ChatGame {
     public static String GAME_ID = "true_or_false";
 
-    private String questionText;
-    private boolean correctAnswer;
+    private Question currentQuestion;
     private boolean correctlyAnswered;
     private boolean completed;
 
     private final Random random = new Random();
+    private final QuestionGenerator questionGenerator;
 
     private boolean minecraftBlocks;
     private boolean minecraftItems;
     private boolean minecraftMobs;
     private boolean minecraftBiomes;
-    private List<CustomQuestion> customQuestions;
+    private List<Question> customQuestions;
+    private int customQuestionProbability; // percentage (0-100)
+    private boolean showCorrectAnswerOnFail;
 
-    public static class QuestionAnswer {
-        private String question;
-        private boolean answer;
+    public static class Question {
+        private final String text;
+        private final boolean answer;
+        private final String category;
+        private @Nullable String hint;
+        private @Nullable String explanation;
+        private List<String> rewardCommands;
 
-        public QuestionAnswer(String question, boolean answer) {
-            this.question = question;
+        public Question(String text, boolean answer, String category) {
+            this.text = text;
             this.answer = answer;
+            this.category = category;
+            this.hint = null;
+            this.explanation = null;
+            this.rewardCommands = new ArrayList<>();
         }
 
-        public String getQuestion() {
-            return question;
+        public String getText() {
+            return text;
         }
 
         public boolean getAnswer() {
             return answer;
         }
-    }
 
-    public static class CustomQuestion {
-        private String question;
-        private boolean answer;
-
-        public CustomQuestion(String question, boolean answer) {
-            this.question = question;
-            this.answer = answer;
+        public String getCategory() {
+            return category;
         }
 
-        public String getQuestion() {
-            return question;
+        public boolean hasHint() {
+            return hint != null;
         }
 
-        public boolean getAnswer() {
-            return answer;
+        public String getHint() {
+            return hint;
+        }
+
+        public void setHint(String hint) {
+            this.hint = hint;
+        }
+
+        public boolean hasExplanation() {
+            return explanation != null;
+        }
+
+        public String getExplanation() {
+            return explanation;
+        }
+
+        public void setExplanation(String explanation) {
+            this.explanation = explanation;
+        }
+
+        public List<String> getRewardCommands() {
+            return rewardCommands;
+        }
+
+        public void setRewardCommands(List<String> rewardCommands) {
+            this.rewardCommands = rewardCommands;
+        }
+
+        public boolean hasRewardCommands() {
+            return !rewardCommands.isEmpty();
         }
     }
     
@@ -75,7 +108,11 @@ public class TrueOrFalseGame extends ChatGame {
         minecraftItems = settings.getBoolean("minecraft_items", true);
         minecraftMobs = settings.getBoolean("minecraft_mobs", true);
         minecraftBiomes = settings.getBoolean("minecraft_biomes", true);
+        customQuestionProbability = settings.getInt("custom_question_probability", 0);
+        showCorrectAnswerOnFail = settings.getBoolean("show_correct_answer_on_fail", true);
+
         customQuestions = loadCustomQuestions();
+        questionGenerator = new QuestionGenerator(TrueOrFalseKnowledge.getInstance());
 
         generateQuestion();
     }
@@ -84,112 +121,82 @@ public class TrueOrFalseGame extends ChatGame {
         return completed;
     }
 
-    private List<CustomQuestion> loadCustomQuestions() {
+    private List<Question> loadCustomQuestions() {
         ConfigurationSection customQuestionsSection = settings.getConfigurationSection("custom_questions");
 
         if (customQuestionsSection == null) {
             return new ArrayList<>();
         }
 
-        List<CustomQuestion> questions = new ArrayList<>();
+        List<Question> questions = new ArrayList<>();
         Set<String> keys = customQuestionsSection.getKeys(false);
         
         for (String key : keys) {
             ConfigurationSection questionSection = customQuestionsSection.getConfigurationSection(key);
+
             if (questionSection == null) continue;
-            if (!questionSection.contains("question") || !questionSection.contains("answer")) continue;
             if (!questionSection.isString("question") || !questionSection.isBoolean("answer")) continue;
-            questions.add(new CustomQuestion(
+
+            String category = questionSection.getString("category", "custom");
+
+            Question question = new Question(
                 questionSection.getString("question"),
-                questionSection.getBoolean("answer")
-            ));
+                questionSection.getBoolean("answer"),
+                category
+            );
+
+            if (questionSection.isString("hint")) {
+                question.setHint(questionSection.getString("hint"));
+            }
+            if (questionSection.isString("explanation")) {
+                question.setExplanation(questionSection.getString("explanation"));
+            }
+            if (questionSection.isList("reward_commands")) {
+                question.setRewardCommands(questionSection.getStringList("reward_commands"));
+            }
+            
+            questions.add(question);
         }
         
         return questions;
     }
 
     private void generateQuestion() {
-        // 20% chance to use a custom question
-        if (!customQuestions.isEmpty() && random.nextInt(5) == 0) {
-            CustomQuestion selected = customQuestions.get(random.nextInt(customQuestions.size()));
-            
-            questionText = selected.getQuestion();
-            correctAnswer = selected.getAnswer();
-        } else {
-            List<String> enabledCategories = new ArrayList<>();
-            
-            if (minecraftBlocks) enabledCategories.add("block");
-            if (minecraftItems) enabledCategories.add("item");
-            if (minecraftMobs) enabledCategories.add("mob");
-            if (minecraftBiomes) enabledCategories.add("biome");
-            if (enabledCategories.isEmpty()) enabledCategories.add("block");
-            
-            String category = enabledCategories.get(random.nextInt(enabledCategories.size()));
-            
-            boolean isTrue = random.nextBoolean();
-            
-            QuestionAnswer qa = generateQuestionForCategory(category, isTrue);
-            questionText = qa.getQuestion();
-            correctAnswer = qa.getAnswer();
+        if (!customQuestions.isEmpty() && random.nextInt(100) < customQuestionProbability) {
+            currentQuestion = customQuestions.get(random.nextInt(customQuestions.size()));
+            return;
         }
+
+        List<String> categories = new ArrayList<>();
+        
+        if (minecraftBlocks) categories.add("block");
+        if (minecraftItems) categories.add("item");
+        if (minecraftMobs) categories.add("mob");
+        if (minecraftBiomes) categories.add("biome");
+        if (categories.isEmpty()) categories.add("block");
+        
+        String category = categories.get(random.nextInt(categories.size()));
+        currentQuestion = questionGenerator.generateQuestion(category);
     }
 
-    private QuestionAnswer generateQuestionForCategory(String category, boolean shouldBeTrue) {
-        String subject = "";
-        String predicate = "";
+    private void printQuestionHelp(Player player) {
+        ChatF.empty()
+            .append("Napiš ")
+            .appendBold("/answer ", ChatF.C_LIGHTGRAY)
+            .appendBold("true", ChatF.C_GREEN)
+            .append(" nebo ")
+            .appendBold("/answer ", ChatF.C_LIGHTGRAY)
+            .appendBold("false", ChatF.C_RED)
+            .append(" pro odpověď.")
+            .sendTo(player);
 
-        String name;
-        String type;
-        Map<String, String> properties;
-        
-        // Select object and property based on category
-        switch (category) {
-            default:
-            case "block":
-                name = TrueOrFalseKnowledge.BLOCKS.get(random.nextInt(TrueOrFalseKnowledge.BLOCKS.size()));
-                subject = "a " + name.replace('_', ' ');
-                type = "block";
-                properties = TrueOrFalseKnowledge.BLOCK_PROPERTIES;
-                break;
-        
-            case "item":
-                name = TrueOrFalseKnowledge.ITEMS.get(random.nextInt(TrueOrFalseKnowledge.ITEMS.size()));
-                subject = "a " + name.replace('_', ' ');
-                type = "item";
-                properties = TrueOrFalseKnowledge.ITEM_PROPERTIES;
-                break;
-    
-            case "mob":
-                name = TrueOrFalseKnowledge.MOBS.get(random.nextInt(TrueOrFalseKnowledge.MOBS.size()));
-                subject = "a " + name.replace('_', ' ');
-                type = "mob";
-                properties = TrueOrFalseKnowledge.MOB_PROPERTIES;
-                break;
-
-            case "biome":
-                name = TrueOrFalseKnowledge.BIOMES.get(random.nextInt(TrueOrFalseKnowledge.BIOMES.size()));
-                subject = "the " + name.replace('_', ' ') + " biome";
-                type = "biome";
-                properties = TrueOrFalseKnowledge.BIOME_PROPERTIES;
-                break;
+        if (currentQuestion.hasHint()) {
+            ChatF.empty()
+                .append("Napiš ")
+                .appendBold("/hint", ChatF.C_YELLOW)
+                .append(" pro nápovědu.")
+                .sendTo(player);
         }
-
-        if (shouldBeTrue) {
-            predicate = properties.get(name);
-        } else {
-            String trueProp = properties.get(name);
-            List<String> falseProps = new ArrayList<>(TrueOrFalseKnowledge.FALSE_PROPERTIES.get(type));
-            falseProps.removeIf(prop -> trueProp.toLowerCase().contains(prop.toLowerCase()));
-            predicate = falseProps.get(random.nextInt(falseProps.size()));
-        }
-        
-        // Format the question using templates
-        List<String> templates = shouldBeTrue ? TrueOrFalseKnowledge.TRUE_TEMPLATES : TrueOrFalseKnowledge.FALSE_TEMPLATES;
-        
-        String template = templates.get(random.nextInt(templates.size()));
-        String question = String.format(template, subject, predicate);
-        
-        return new QuestionAnswer(question, shouldBeTrue);
     }
 
     @Override
@@ -199,36 +206,39 @@ public class TrueOrFalseGame extends ChatGame {
 
     @Override
     public ChatF onHint(Player player) {
-        return ChatF.of("Žádná nápověda pro tuto hru.");
+        if (currentQuestion.hasHint()) {
+            return ChatF.of("Hint: " + currentQuestion.getHint(), ChatF.C_YELLOW);
+        } else {
+            return ChatF.of("Žádná nápověda pro tuto otázku.");
+        }
     }
 
     @Override
     public ChatF getGameSummary() {
         if (completed) {
-            return ChatF.of("You " + (correctlyAnswered ? "correctly" : "incorrectly") + " answered the question: '" + questionText + "'");
+            return ChatF.empty()
+                .appendBold(
+                    correctlyAnswered ? "Správně" : "Nesprávně",
+                    correctlyAnswered ? ChatF.C_GREEN : ChatF.C_RED
+                )
+                .append(" si odpověděl na otázku!");
         } else {
             // NOTE: should never happen in normal game flow
-            return ChatF.of("You did not complete the true/false question.");
+            return ChatF.of("Hra není dokončena.");
         }
     }
     
     @Override
     public void start(Player player) {
-        ChatF message1 = ChatF.empty()
-            .append("Is the following statement true or false?");
-        player.sendMessage(message1.build());
+        ChatF.empty()
+            .append("Je toto tvrzení pravdivé?")
+            .sendTo(player);
 
-        ChatF message2 = ChatF.empty()
-            .appendBold(questionText);
-        player.sendMessage(message2.build());
+        ChatF.empty()
+            .appendBold(currentQuestion.getText(), ChatF.C_YELLOW)
+            .sendTo(player);
 
-        ChatF message = ChatF.empty()
-            .append("Type ")
-            .appendBold("true", ChatF.C_GREEN)
-            .append(" or ")
-            .appendBold("false", ChatF.C_RED)
-            .append(" to answer.");
-        player.sendMessage(message.build());
+        printQuestionHelp(player);
     }
     
     @Override
@@ -236,24 +246,37 @@ public class TrueOrFalseGame extends ChatGame {
         answer = answer.trim().toUpperCase();
 
         if (!answer.equals("TRUE") && !answer.equals("FALSE")) {
-            ChatF message = ChatF.empty()
-                .append("Type ")
-                .appendBold("true", ChatF.C_GREEN)
-                .append(" or ")
-                .appendBold("false", ChatF.C_RED)
-                .append(" to answer.");
-            player.sendMessage(message.build());
+            printQuestionHelp(player);
             return ChatGameResponse.incorrect();
         }
 
         boolean playerAnswer = answer.equals("TRUE");
         completed = true;
-        correctlyAnswered = playerAnswer == correctAnswer;
+        correctlyAnswered = playerAnswer == currentQuestion.getAnswer();
 
-        if (correctlyAnswered) {
-            return ChatGameResponse.endGameCorrect();
+        if (!correctlyAnswered && showCorrectAnswerOnFail) {
+            ChatF.empty()
+                .append("Správná odpověď: ")
+                .appendBold(
+                    currentQuestion.getAnswer() ? "TRUE" : "FALSE",
+                    currentQuestion.getAnswer() ? ChatF.C_GREEN : ChatF.C_RED
+                )
+                .sendTo(player);
+
+            if (currentQuestion.hasExplanation()) {
+                ChatF.empty()
+                    .append("Vysvětlení: ")
+                    .append(currentQuestion.getExplanation(), ChatF.C_GRAY)
+                    .sendTo(player);
+            }
         }
 
-        return ChatGameResponse.endGameIncorrect();
+        if (correctlyAnswered) {
+            return ChatGameResponse.endCorrect().withRewardCommands(
+                currentQuestion.getRewardCommands()
+            );
+        }
+
+        return ChatGameResponse.endIncorrect();
     }
 }

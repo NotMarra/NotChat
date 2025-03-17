@@ -116,16 +116,21 @@ public class FastTypeGame extends ChatGame {
     
     @Override
     public void start(Player player) {
-        ChatF wordMessage = ChatF.of("Napiš slovo: ").appendBold(targetWord);
-        player.sendMessage(wordMessage.build());
+        ChatF.empty()
+            .append("Napiš slovo: ")
+            .appendBold(targetWord)
+            .sendTo(player);
 
-        ChatF timeMessage = ChatF.empty()
+        ChatF.empty()
             .append("Máš ")
             .appendBold(MAX_TIME + " sekund", ChatF.C_RED)
-            .append("!");
-        player.sendMessage(timeMessage.build());
+            .append("!")
+            .sendTo(player);
 
-        player.sendMessage(ChatF.ofBold("/answer <slovo>").build());
+        ChatF.empty()
+            .appendBold("/answer <slovo>")
+            .append(" pro odeslání odpovědi.")
+            .sendTo(player);
     }
     
     @Override
@@ -136,15 +141,15 @@ public class FastTypeGame extends ChatGame {
         long elapsedTime = currentTime - startTime;
 
         if (elapsedTime > MAX_TIME * 1000) {
-            return ChatGameResponse.endGameIncorrect();
+            return ChatGameResponse.endIncorrect();
         }
 
         if (answer.equalsIgnoreCase(targetWord)) {
             completionTime = elapsedTime;
             completed = true;
-            return ChatGameResponse.endGameCorrect();
+            return ChatGameResponse.endCorrect();
         }
 
-        return ChatGameResponse.endGameIncorrect();
+        return ChatGameResponse.endIncorrect();
     }
 }

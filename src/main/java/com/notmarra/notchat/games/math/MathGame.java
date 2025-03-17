@@ -36,15 +36,15 @@ public class MathGame extends ChatGame {
 
     @Override
     public void start(Player player) {
-        ChatF problem = ChatF.empty()
+        ChatF.empty()
             .append("Vypočítej správně: ")
-            .append(mathProblem.getPrettyPrintedProblem());
-        player.sendMessage(problem.build());
+            .append(mathProblem.getPrettyPrintedProblem())
+            .sendTo(player);
 
-        ChatF difficulty = ChatF.empty()
+        ChatF.empty()
             .append("Obtížnost: ")
-            .append(mathProblem.getDifficulty().getName());
-        player.sendMessage(difficulty.build());
+            .append(mathProblem.getDifficulty().getName())
+            .sendTo(player);
     }
 
     @Override
@@ -52,7 +52,7 @@ public class MathGame extends ChatGame {
         try {
             double playerAnswer = Double.parseDouble(answer);
             double correctAnswer = mathProblem.getCorrectAnswer();
-            return ChatGameResponse.endGame(playerAnswer == correctAnswer);
+            return ChatGameResponse.end(playerAnswer == correctAnswer);
         } catch (NumberFormatException e) {
             return ChatGameResponse.incorrect();
         }

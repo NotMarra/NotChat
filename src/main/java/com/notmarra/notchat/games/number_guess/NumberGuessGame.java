@@ -86,23 +86,27 @@ public class NumberGuessGame extends ChatGame {
 
     @Override
     public void start(Player player) {
-        ChatF message1 = ChatF.empty()
-            .append("Myslím si číslo mezi " + minNumber + " a " + maxNumber + ".");
-        player.sendMessage(message1.build());
+        ChatF.empty()
+            .append("Myslím si číslo mezi ")
+            .appendBold(String.valueOf(minNumber), ChatF.C_DODGERBLUE)
+            .append(" a ")
+            .appendBold(String.valueOf(maxNumber), ChatF.C_DODGERBLUE)
+            .append(".")
+            .sendTo(player);
 
-        ChatF message2 = ChatF.empty()
+        ChatF.empty()
             .append("Máš ")
             .appendBold(String.valueOf(maxAttempts), ChatF.C_RED)
-            .append(" pokusů.")
-            .append(" Jaké číslo si myslím?");
-        player.sendMessage(message2.build());
+            .append(" pokusů. ")
+            .append("Jaké číslo si myslím?")
+            .sendTo(player);
 
-        ChatF hintMessage = ChatF.empty()
+        ChatF.empty()
             .appendBold("/answer <číslo>")
             .append(" nebo ")
             .appendBold("/hint")
-            .append(" pro nápovědu.");
-        player.sendMessage(hintMessage.build());
+            .append(" pro nápovědu.")
+            .sendTo(player);
     }
 
     @Override
@@ -113,24 +117,24 @@ public class NumberGuessGame extends ChatGame {
 
             if (guess == targetNumber) {
                 gameWon = true;
-                return ChatGameResponse.endGameCorrect();
+                return ChatGameResponse.endCorrect();
             }
 
             if (attemptsLeft <= 0) {
-                return ChatGameResponse.endGameIncorrect();
+                return ChatGameResponse.endIncorrect();
             }
 
-            ChatF message = ChatF.of("[" + guess + "] ");
-            if (guess < targetNumber) {
-                message.appendBold("Větší!", ChatF.C_GREEN);
-            } else {
-                message.appendBold("Menší!", ChatF.C_RED);
-            }
-            message.append(" ");
-            message.append("Zbývá ");
-            message.append(String.valueOf(attemptsLeft), ChatF.C_YELLOW);
-            message.append(" pokusů.");
-            player.sendMessage(message.build());
+            ChatF.empty()
+                .append("[" + guess + "] ")
+                .appendBold(
+                    guess < targetNumber ? "Menší!" : "Větší!",
+                    guess < targetNumber ? ChatF.C_RED : ChatF.C_GREEN
+                )
+                .append(" ")
+                .append("Zbývá ")
+                .append(String.valueOf(attemptsLeft), ChatF.C_YELLOW)
+                .append(" pokusů.")
+                .sendTo(player);
 
             return ChatGameResponse.incorrect();
         } catch (NumberFormatException e) {
