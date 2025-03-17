@@ -3,14 +3,11 @@ modules:
   msg: true
   local_chat: true
   chat_games: true
-  tags: true
+  tags: true # TODO: Add this module
   tab_complete: true
   chat_color: true # TODO: Add this module
-  ping: true # TODO: Add this module
-  chat_filter: true # TODO: Add this module
-  chat_anti_spam: true # TODO: Add this module
-  chat_anti_advertise: true # TODO: Add this module
-  chat_anti_caps: true # TODO: Add this module
+  ping: true # TODO: Add this module - @NotMarra --> zahraje zvuk, title, actionbar, atd.
+  chat_filter: true # TODO: Add this module - anti-spam, anti-advertise, anti-caps, anti-unicode atd.
 
 chat_formats:
   owner: "<red>[Owner] <gray>[<white>%player_name%<gray>]: <white>%message%"

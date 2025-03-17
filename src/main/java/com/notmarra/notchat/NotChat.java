@@ -11,6 +11,8 @@ import com.notmarra.notlib.utils.command.NotCommand;
 import io.papermc.paper.plugin.lifecycle.event.types.LifecycleEvents;
 import net.milkbowl.vault.permission.Permission;
 import org.bukkit.Bukkit;
+import org.bukkit.command.Command;
+import org.bukkit.command.CommandMap;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.Entity;
 import org.bukkit.plugin.RegisteredServiceProvider;
@@ -18,17 +20,18 @@ import org.bukkit.plugin.java.JavaPlugin;
 
 import java.io.File;
 import java.util.List;
+import java.util.Map;
 
 import static com.notmarra.notchat.cmds.Chat.Msg;
 
 public final class NotChat extends JavaPlugin {
-    public static NotChat instance;
-    public static Boolean Vault = false;
-    public static Boolean PlaceholderAPI = false;
-    public static ConfigurationSection chat_formats;
+    private static NotChat instance;
+    private static Boolean Vault = false;
+    private static Boolean PlaceholderAPI = false;
+    private static ConfigurationSection chat_formats;
     private static Permission perms = null;
     private static GameManager gameManager;
-    private TabCompletionManager tabCompletionManager;
+    private Map<String, Command> knownCommands;
 
     private static final List<String> CONFIG_FILES = List.of(
         "config.yml",
@@ -77,13 +80,14 @@ public final class NotChat extends JavaPlugin {
         }
 
         if (Config.getBoolean("modules.tab_complete")) {
-            tabCompletionManager = new TabCompletionManager(this);
-        
-            if (tabCompletionManager.initialize()) {
-                getLogger().info("TabCompletionManager module enabled");
-            } else {
-                getLogger().warning("TabCompletionManager module disabled (Vault not found)");
-            }
+            this.getServer().getPluginManager().registerEvents(new TabCompletionManager(this), this);
+            this.getLogger().info("Tab complete module enabled");
+
+            Bukkit.getScheduler().runTaskLater(this, () -> {
+                CommandMap commandMap = this.getServer().getCommandMap();
+                knownCommands = commandMap.getKnownCommands();
+                this.getLogger().info("Commands mapped");
+            }, 20L);
         }
 
         if (Config.getBoolean("modules.chat_games")) {
@@ -147,6 +151,10 @@ public final class NotChat extends JavaPlugin {
 
     public static Permission getPerms() {
         return perms;
+    }
+
+    public Map<String, Command> getKnownCommands() {
+        return knownCommands;
     }
 
 }
