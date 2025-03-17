@@ -81,9 +81,9 @@ public final class NotChat extends JavaPlugin {
             tabCompletionManager = new TabCompletionManager(this);
         
             if (tabCompletionManager.initialize()) {
-                getLogger().info("TabCompletionManager byl úspěšně aktivován");
+                getLogger().info("TabCompletionManager module enabled");
             } else {
-                getLogger().warning("TabCompletionManager nemohl být aktivován (Vault nenalezen nebo nefunkční)");
+                getLogger().warning("TabCompletionManager module disabled (Vault not found)");
             }
         }
 
