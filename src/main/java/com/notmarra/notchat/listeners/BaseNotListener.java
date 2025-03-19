@@ -70,9 +70,8 @@ public abstract class BaseNotListener implements Listener {
     }
 
     public void register() {
-        if (isRegistered) {
-            return;
-        }
+        if (isRegistered) return;
+        isRegistered = true;
 
         initialize();
 

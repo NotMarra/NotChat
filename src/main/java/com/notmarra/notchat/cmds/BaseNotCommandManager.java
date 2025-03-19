@@ -63,9 +63,8 @@ public abstract class BaseNotCommandManager {
     }
 
     public void register() {
-        if (isRegistered) {
-            return;
-        }
+        if (isRegistered) return;
+        isRegistered = true;
 
         initialize();
 
