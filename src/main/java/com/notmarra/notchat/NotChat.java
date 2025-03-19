@@ -30,11 +30,9 @@ public final class NotChat extends JavaPlugin {
     private static final Map<String, FileConfiguration> CONFIGS = new HashMap<>();
     private static final Map<String, BaseNotListener> LISTENERS = new HashMap<>();
     private static final Map<String, BaseNotCommandManager> CMDMGRS = new HashMap<>();
-    public static final String CONFIG_PLUGIN = "config.yml";
-    public static final String CONFIG_GAMES = "games.yml";
 
     private void loadConfigFiles() {
-        CONFIGS.put(CONFIG_PLUGIN, this.getConfig());
+        CONFIGS.put("config.yml", this.getConfig());
 
         for (BaseNotListener listener : LISTENERS.values()) {
             reloadConfig(listener.getConfigFile());
@@ -59,10 +57,7 @@ public final class NotChat extends JavaPlugin {
 
     @Override
     public void saveDefaultConfig() {
-        File pluginConfig = new File(getDataFolder(), CONFIG_PLUGIN);
-        if (!pluginConfig.exists()) {
-            saveResource(CONFIG_PLUGIN, false);
-        }
+        super.saveDefaultConfig();
 
         for (BaseNotListener listener : LISTENERS.values()) {
             File configFile = new File(getDataFolder(), listener.getConfigFile());
