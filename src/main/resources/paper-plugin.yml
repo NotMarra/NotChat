@@ -5,6 +5,16 @@ authors:
   - "NotMarra"
   - "TheNoiselessNoise"
 api-version: "1.21"
+permissions:
+  notchat.ping:
+    description: Allows players to ping others
+    default: true
+  notchat.ping.receive:
+    description: Allows players to receive pings
+    default: true
+  notchat.ping.reload:
+    description: Allows players to reload the configuration
+    default: op
 dependencies:
   server:
     PlaceholderAPI:

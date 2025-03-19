@@ -5,15 +5,15 @@ import java.util.List;
 import java.util.Random;
 
 import org.bukkit.entity.Player;
-import org.bukkit.plugin.java.JavaPlugin;
 
+import com.notmarra.notchat.NotChat;
 import com.notmarra.notchat.games.ChatGame;
 import com.notmarra.notchat.games.ChatGameResponse;
 import com.notmarra.notlib.utils.ChatF;
 import com.notmarra.notchat.utils.MinecraftStuff;
 
 public class AnagramGame extends ChatGame {
-    public static String GAME_ID = "anagram";
+    public static String ID = "anagram";
 
     private String originalWord;
     private String scrambledWord;
@@ -26,8 +26,8 @@ public class AnagramGame extends ChatGame {
     private boolean minecraftBiomes;
     private List<String> customWords;
     
-    public AnagramGame(JavaPlugin plugin, String id) {
-        super(plugin, id);
+    public AnagramGame(NotChat plugin) {
+        super(plugin);
         
         this.hintsUsed = 0;
         this.solved = false;
@@ -109,6 +109,11 @@ public class AnagramGame extends ChatGame {
         }
         
         return result;
+    }
+
+    @Override
+    public String getId() {
+        return ID;
     }
 
     @Override

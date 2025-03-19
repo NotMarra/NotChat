@@ -6,15 +6,15 @@ import java.util.Random;
 import java.util.concurrent.TimeUnit;
 
 import org.bukkit.entity.Player;
-import org.bukkit.plugin.java.JavaPlugin;
 
+import com.notmarra.notchat.NotChat;
 import com.notmarra.notchat.games.ChatGame;
 import com.notmarra.notchat.games.ChatGameResponse;
 import com.notmarra.notlib.utils.ChatF;
 import com.notmarra.notchat.utils.MinecraftStuff;
 
 public class FastTypeGame extends ChatGame {
-    public static String GAME_ID = "fast_type";
+    public static String ID = "fast_type";
 
     private String targetWord;
     private static final int MAX_TIME = 30;
@@ -27,8 +27,8 @@ public class FastTypeGame extends ChatGame {
     private boolean minecraftBiomes;
     private List<String> customWords;
     
-    public FastTypeGame(JavaPlugin plugin, String id) {
-        super(plugin, id);
+    public FastTypeGame(NotChat plugin) {
+        super(plugin);
         
         this.completed = false;
         
@@ -92,6 +92,11 @@ public class FastTypeGame extends ChatGame {
         double charCount = word.length();
         double standardizedWords = charCount / 5.0;
         return standardizedWords / minutes;
+    }
+
+    @Override
+    public String getId() {
+        return ID;
     }
 
     @Override

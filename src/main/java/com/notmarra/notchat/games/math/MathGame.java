@@ -1,20 +1,25 @@
 package com.notmarra.notchat.games.math;
 
 import org.bukkit.entity.Player;
-import org.bukkit.plugin.java.JavaPlugin;
 
+import com.notmarra.notchat.NotChat;
 import com.notmarra.notchat.games.ChatGame;
 import com.notmarra.notchat.games.ChatGameResponse;
 import com.notmarra.notlib.utils.ChatF;
 
 public class MathGame extends ChatGame {
-    public static String GAME_ID = "math";
+    public static String ID = "math";
 
     public MathGameProblem mathProblem;
     
-    public MathGame(JavaPlugin plugin, String id) {
-        super(plugin, id);
+    public MathGame(NotChat plugin) {
+        super(plugin);
         mathProblem = new MathGameProblem(MathGameProblemDifficulty.random());
+    }
+
+    @Override
+    public String getId() {
+        return ID;
     }
 
     @Override

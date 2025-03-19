@@ -1,49 +1,80 @@
 package com.notmarra.notchat;
 
-import com.notmarra.notchat.games.GameManager;
-import com.notmarra.notchat.listeners.ChatListener;
-import com.notmarra.notchat.listeners.TabCompletionManager;
-import com.notmarra.notlib.utils.ChatF;
-import com.notmarra.notchat.utils.Config;
+import com.notmarra.notchat.cmds.BaseNotCommandManager;
+import com.notmarra.notchat.cmds.GamesCommandManager;
+import com.notmarra.notchat.cmds.MessageCommandManager;
+import com.notmarra.notchat.listeners.ChatFormatListener;
+import com.notmarra.notchat.listeners.LocalChatListener;
+import com.notmarra.notchat.listeners.BaseNotListener;
+import com.notmarra.notchat.listeners.PingListener;
+import com.notmarra.notchat.listeners.TabCompletionListener;
 import com.notmarra.notchat.utils.MinecraftStuff;
-import com.notmarra.notlib.utils.command.NotCommand;
 
-import io.papermc.paper.plugin.lifecycle.event.types.LifecycleEvents;
 import net.milkbowl.vault.permission.Permission;
 import org.bukkit.Bukkit;
-import org.bukkit.command.Command;
-import org.bukkit.command.CommandMap;
-import org.bukkit.configuration.ConfigurationSection;
-import org.bukkit.entity.Entity;
+import org.bukkit.configuration.file.FileConfiguration;
+import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.plugin.RegisteredServiceProvider;
 import org.bukkit.plugin.java.JavaPlugin;
 
 import java.io.File;
-import java.util.List;
+import java.util.HashMap;
 import java.util.Map;
-
-import static com.notmarra.notchat.cmds.Chat.Msg;
 
 public final class NotChat extends JavaPlugin {
     private static NotChat instance;
     private static Boolean Vault = false;
     private static Boolean PlaceholderAPI = false;
-    private static ConfigurationSection chat_formats;
     private static Permission perms = null;
-    private static GameManager gameManager;
-    private Map<String, Command> knownCommands;
 
-    private static final List<String> CONFIG_FILES = List.of(
-        "config.yml",
-        "games.yml"
-    );
+    private static final Map<String, FileConfiguration> CONFIGS = new HashMap<>();
+    private static final Map<String, BaseNotListener> LISTENERS = new HashMap<>();
+    private static final Map<String, BaseNotCommandManager> CMDMGRS = new HashMap<>();
+    public static final String CONFIG_PLUGIN = "config.yml";
+    public static final String CONFIG_GAMES = "games.yml";
+
+    private void loadConfigFiles() {
+        CONFIGS.put(CONFIG_PLUGIN, this.getConfig());
+
+        for (BaseNotListener listener : LISTENERS.values()) {
+            reloadConfig(listener.getConfigFile());
+        }
+
+        for (BaseNotCommandManager cmdGroup : CMDMGRS.values()) {
+            reloadConfig(cmdGroup.getConfigFile());
+        }
+    }
+
+    private void initListeners() {
+        LISTENERS.put(PingListener.ID, new PingListener(this));
+        LISTENERS.put(ChatFormatListener.ID, new ChatFormatListener(this));
+        LISTENERS.put(LocalChatListener.ID, new LocalChatListener(this));
+        LISTENERS.put(TabCompletionListener.ID, new TabCompletionListener(this));
+    }
+
+    private void initCommandGroups() {
+        CMDMGRS.put(MessageCommandManager.ID, new MessageCommandManager(this));
+        CMDMGRS.put(GamesCommandManager.ID, new GamesCommandManager(this));
+    }
 
     @Override
     public void saveDefaultConfig() {
-        for (String file : CONFIG_FILES) {
-            File configFile = new File(getDataFolder(), file);
-            if (!configFile.exists()) {
-                saveResource(file, false);
+        File pluginConfig = new File(getDataFolder(), CONFIG_PLUGIN);
+        if (!pluginConfig.exists()) {
+            saveResource(CONFIG_PLUGIN, false);
+        }
+
+        for (BaseNotListener listener : LISTENERS.values()) {
+            File configFile = new File(getDataFolder(), listener.getConfigFile());
+            if (!configFile.exists() && listener.hasConfig()) {
+                saveResource(listener.getConfigFile(), false);
+            }
+        }
+
+        for (BaseNotCommandManager cmdGroup : CMDMGRS.values()) {
+            File configFile = new File(getDataFolder(), cmdGroup.getConfigFile());
+            if (!configFile.exists() && cmdGroup.hasConfig()) {
+                saveResource(cmdGroup.getConfigFile(), false);
             }
         }
     }
@@ -54,8 +85,11 @@ public final class NotChat extends JavaPlugin {
 
         instance = this;
 
-        // Load configuration
+        // NOTE: this order is important
+        this.initListeners();
+        this.initCommandGroups();
         this.saveDefaultConfig();
+        this.loadConfigFiles();
 
         // Check PlaceholderAPI
         if (Bukkit.getPluginManager().isPluginEnabled("PlaceholderAPI")) {
@@ -68,63 +102,14 @@ public final class NotChat extends JavaPlugin {
             Vault = true;
             this.getLogger().info("Vault found, hooking into it");
 
-            RegisteredServiceProvider<Permission> rsp = NotChat.getInstance().getServer().getServicesManager().getRegistration(Permission.class);
+            RegisteredServiceProvider<Permission> rsp = getServer()
+                .getServicesManager()
+                .getRegistration(Permission.class);
             perms = rsp.getProvider();
         }
 
-        // Register events
-        if (Config.getBoolean("modules.chat_format")) {
-            chat_formats = Config.getConfigurationSection("chat_formats");
-            this.getServer().getPluginManager().registerEvents(new ChatListener(this), this);
-            this.getLogger().info("Chat format module enabled");
-        }
-
-        if (Config.getBoolean("modules.tab_complete")) {
-            this.getServer().getPluginManager().registerEvents(new TabCompletionManager(this), this);
-            this.getLogger().info("Tab complete module enabled");
-
-            Bukkit.getScheduler().runTaskLater(this, () -> {
-                CommandMap commandMap = this.getServer().getCommandMap();
-                knownCommands = commandMap.getKnownCommands();
-                this.getLogger().info("Commands mapped");
-            }, 20L);
-        }
-
-        if (Config.getBoolean("modules.chat_games")) {
-            gameManager = new GameManager(this);
-            this.getLifecycleManager().registerEventHandler(LifecycleEvents.COMMANDS, commands -> {
-                for (NotCommand cmd : gameManager.getCommands()) {
-                    commands.registrar().register(cmd.build());
-                }
-            });
-            this.getLogger().info("Games module enabled");
-        }
-
-        this.getLifecycleManager().registerEventHandler(LifecycleEvents.COMMANDS, commands -> {
-            if (Config.getBoolean("modules.msg")) {
-                for (NotCommand cmd : Msg()) {
-                    commands.registrar().register(cmd.build());
-                }
-                this.getLogger().info("Msg commands registered");
-            }
-        });
-
-        // TODO: remove
-        this.getLifecycleManager().registerEventHandler(LifecycleEvents.COMMANDS, commands -> {
-            NotCommand cmd = new NotCommand("devtest");
-
-            cmd.onExecute(ctx -> {
-                Entity entity = ctx.getSource().getExecutor();
-
-                ChatF.of("Hello, %player_name%!").sendTo(entity);
-                ChatF.of("Your position is: %player_x%, %player_y%, %player_z%").sendTo(entity);
-                ChatF.of("Target position is: %target_x%, %target_y%, %target_z%").sendTo(entity);
-
-                return 1;
-            });
-
-            commands.registrar().register(cmd.build());
-        });
+        LISTENERS.values().forEach(l -> l.register());
+        CMDMGRS.values().forEach(c -> c.register());
 
         this.getLogger().info("Enabled successfully - Version: " + this.getPluginMeta().getVersion());
     }
@@ -145,16 +130,21 @@ public final class NotChat extends JavaPlugin {
 
     public static Boolean hasPAPI() { return PlaceholderAPI; }
 
-    public static ConfigurationSection getChatFormats() {
-        return chat_formats;
-    }
-
     public static Permission getPerms() {
         return perms;
     }
 
-    public Map<String, Command> getKnownCommands() {
-        return knownCommands;
+    public FileConfiguration getSubConfig(String file) {
+        return CONFIGS.get(file);
     }
 
+    public void reloadConfig(String file) {
+        File configFile = new File(getDataFolder(), file);
+        if (!configFile.exists()) return;
+        CONFIGS.put(file, YamlConfiguration.loadConfiguration(configFile));
+    }
+
+    public BaseNotListener getListener(String id) {
+        return LISTENERS.get(id);
+    }
 }

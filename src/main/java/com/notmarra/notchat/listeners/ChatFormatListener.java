@@ -4,15 +4,33 @@ import com.notmarra.notchat.NotChat;
 import com.notmarra.notlib.utils.ChatF;
 
 import io.papermc.paper.event.player.AsyncChatEvent;
+
+import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
-import org.bukkit.event.Listener;
 
-public class ChatListener implements Listener {
-    private final NotChat plugin;
+public class ChatFormatListener extends BaseNotListener {
+    public static final String ID = "format";
 
-    public ChatListener(NotChat plugin) {
-        this.plugin = plugin;
+    private ConfigurationSection formats;
+
+    public ChatFormatListener(NotChat plugin) {
+        super(plugin);
+    }
+
+    @Override
+    public String getId() {
+        return ID;
+    }
+
+    @Override
+    public boolean hasConfig() {
+        return true;
+    }
+
+    @Override
+    public void loadConfig() {
+        formats = config.getConfigurationSection("formats");
     }
 
     @EventHandler
@@ -27,12 +45,12 @@ public class ChatListener implements Listener {
                 return;
             }
 
-            if (NotChat.getChatFormats().contains(group)) {
+            if (formats.contains(group)) {
                 sendMessage(player, group, event);
                 return;
             }
         } else {
-            for (String type : NotChat.getChatFormats().getKeys(false)) {
+            for (String type : formats.getKeys(false)) {
                 if (player.hasPermission(type)) {
                     sendMessage(player, type, event);
                     return;
@@ -44,7 +62,9 @@ public class ChatListener implements Listener {
     }
 
     private void sendMessage(Player player, String type, AsyncChatEvent event) {
-        String format = NotChat.getChatFormats().getString(type);
+        LocalChatListener localChatListener = (LocalChatListener) getListener(LocalChatListener.ID);
+
+        String format = formats.getString(type);
 
         // TODO: if format is null (invalid config file) use some hardcoded fallback
 
@@ -53,13 +73,8 @@ public class ChatListener implements Listener {
             .withPlayer(player)
             .replace(ChatF.K_MESSAGE, event.message());
         
-        if (plugin.getConfig().getBoolean("modules.local_chat")) {
-            int radius = plugin.getConfig().getInt("local_chat.radius");
-            for (Player p : player.getWorld().getPlayers()) {
-                if (p.getLocation().distance(player.getLocation()) <= radius) {
-                    message.sendTo(p);
-                }
-            }
+        if (localChatListener.isEnabled()) {
+            localChatListener.sendMessage(player, message);
         } else {
             player.getServer().broadcast(message.build());
         }

@@ -1,38 +1,39 @@
 package com.notmarra.notchat.games;
 
 import com.notmarra.notlib.utils.ChatF;
+import com.notmarra.notchat.NotChat;
 import com.notmarra.notchat.utils.ConfigFiles;
 
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.Player;
-import org.bukkit.plugin.java.JavaPlugin;
 
 import java.util.ArrayList;
 import java.util.List;
 
 
 public abstract class ChatGame {
-    public JavaPlugin plugin;
-    public String id;
+    public NotChat plugin;
     public long startTime;
     public ConfigurationSection settings;
     public List<String> rewardCommands;
 
-    public ChatGame(JavaPlugin plugin, String id) {
+    public ChatGame(NotChat plugin) {
         this.plugin = plugin;
-        this.id = id;
         this.startTime = System.currentTimeMillis();
-        this.settings = ConfigFiles.getConfigurationSection("games.yml", id + ".settings");
+
+        this.settings = ConfigFiles.getConfigurationSection("games.yml", getId() + ".settings");
         if (this.settings == null) {
             this.settings = ConfigFiles.emptyConfigurationSection();
         }
-        this.rewardCommands = ConfigFiles.getStringList("games.yml", id + ".reward_commands");
+        this.rewardCommands = ConfigFiles.getStringList("games.yml", getId() + ".reward_commands");
     }
+
+    public abstract String getId();
 
     public abstract ChatF getGameSummary();
 
     public ChatF getTitle() {
-        return ChatF.of("[[[ " + id + " ]]]", ChatF.C_DODGERBLUE);
+        return ChatF.of("[[[ " + getId() + " ]]]", ChatF.C_DODGERBLUE);
     }
 
     public void initialize(Player player) {

@@ -3,14 +3,14 @@ package com.notmarra.notchat.games.number_guess;
 import java.util.Random;
 
 import org.bukkit.entity.Player;
-import org.bukkit.plugin.java.JavaPlugin;
 
+import com.notmarra.notchat.NotChat;
 import com.notmarra.notchat.games.ChatGame;
 import com.notmarra.notchat.games.ChatGameResponse;
 import com.notmarra.notlib.utils.ChatF;
 
 public class NumberGuessGame extends ChatGame {
-    public static String GAME_ID = "number_guess";
+    public static String ID = "number_guess";
 
     private final int minNumber;
     private final int maxNumber;
@@ -48,8 +48,8 @@ public class NumberGuessGame extends ChatGame {
         }
     }
     
-    public NumberGuessGame(JavaPlugin plugin, String id) {
-        super(plugin, id);
+    public NumberGuessGame(NotChat plugin) {
+        super(plugin);
         GameDifficulty difficulty = GameDifficulty.MEDIUM;
         this.minNumber = difficulty.getMinValue();
         this.maxNumber = difficulty.getMaxValue();
@@ -63,6 +63,11 @@ public class NumberGuessGame extends ChatGame {
 
     public boolean isGameOver() {
         return attemptsLeft <= 0 || gameWon;
+    }
+
+    @Override
+    public String getId() {
+        return ID;
     }
 
     @Override

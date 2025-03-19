@@ -9,14 +9,14 @@ import javax.annotation.Nullable;
 
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.Player;
-import org.bukkit.plugin.java.JavaPlugin;
 
+import com.notmarra.notchat.NotChat;
 import com.notmarra.notchat.games.ChatGame;
 import com.notmarra.notchat.games.ChatGameResponse;
 import com.notmarra.notlib.utils.ChatF;
 
 public class TrueOrFalseGame extends ChatGame {
-    public static String GAME_ID = "true_or_false";
+    public static String ID = "true_or_false";
 
     private Question currentQuestion;
     private boolean correctlyAnswered;
@@ -99,8 +99,8 @@ public class TrueOrFalseGame extends ChatGame {
         }
     }
     
-    public TrueOrFalseGame(JavaPlugin plugin, String id) {
-        super(plugin, id);
+    public TrueOrFalseGame(NotChat plugin) {
+        super(plugin);
         
         this.completed = false;
         
@@ -197,6 +197,11 @@ public class TrueOrFalseGame extends ChatGame {
                 .append(" pro nápovědu.")
                 .sendTo(player);
         }
+    }
+
+    @Override
+    public String getId() {
+        return ID;
     }
 
     @Override
