@@ -37,7 +37,7 @@ public abstract class BaseNotCommandManager {
     public abstract String getId();
 
     public String getConfigFile() {
-        return getId() + ".yml";
+        return "modules/" + getId() + ".yml";
     }
 
     private String getModulePath() {

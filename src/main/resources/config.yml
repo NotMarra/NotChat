@@ -1,10 +1,24 @@
+############################################
+# _   _       _    ____ _           _
+#| \ | | ___ | |_ / ___| |__   __ _| |_
+#|  \| |/ _ \| __| |   | '_ \ / _` | __|
+#| |\  | (_) | |_| |___| | | | (_| | |_
+#|_| \_|\___/ \__|\____|_| |_|\__,_|\__|
+#
+#    By: NotMarra, TheNoiselessNoise
+#
+############################################
+# This is the main configuration file for the plugin.
+# Each module can be enabled or disabled by changing the value to true or false.
+# Each module can be configured by changing the values in the respective module's section.
+# You can find more information about each module in the wiki. (https://wiki.notmarra.com)
 modules:
   format: true
   msg: true
   local: true
   games: true
-  tags: true # TODO: Add this module
+  tags: true # TODO: Add this module - menu, custom tags setuped in tags.yml
   tab: true
-  color: true # TODO: Add this module
+  color: true # TODO: Add this module - menu, custom color setuped in color.yml
   ping: true
   filter: true # TODO: Add this module - anti-spam, anti-advertise, anti-caps, anti-unicode atd.

@@ -1,0 +1,56 @@
+# Anti-spam settings
+spam:
+  enabled: true
+  # Minimum time between messages (in milliseconds)
+  cooldown: 1000
+  # Maximum similar messages allowed in a row
+  max_similar: 3
+  # Similarity threshold (0.0-1.0) - higher means more similar
+  similarity_threshold: 0.8
+
+# Anti-advertising settings
+advertising:
+  enabled: true
+  # URLs to whitelist (e.g., your server website)
+  whitelisted_urls:
+    - "yourserver.com"
+    - "discord.gg/yourserver"
+  # IP address pattern detection
+  detect_ip_addresses: true
+  # Action to take: BLOCK, REPLACE, WARN
+  action: "BLOCK"
+  # Message to show when blocked
+  block_message: "<red>Advertising is not allowed on this server."
+
+# Anti-caps settings
+caps:
+  enabled: true
+  # Minimum message length to check for caps
+  min_length: 5
+  # Maximum percentage of uppercase letters allowed
+  max_percentage: 40
+  # Action to take: BLOCK, CONVERT, WARN
+  action: "CONVERT"
+
+# Anti-unicode settings
+unicode:
+  enabled: true
+  # Whether to block messages with unicode characters
+  block_unicode: false
+  # Maximum percentage of unicode characters allowed
+  max_percentage: 20
+  # List of allowed unicode ranges (for languages etc.)
+  allowed_ranges:
+    - "0370-03FF" # Greek
+    - "0400-04FF" # Cyrillic
+  # Action to take: BLOCK, REPLACE, WARN
+  action: "REPLACE"
+  # Character to replace unicode with
+  replacement_char: "?"
+
+# General settings
+general:
+  # Permission to bypass filter
+  bypass_permission: "notchat.filter.bypass"
+  # Whether to log filtered messages
+  log_filtered: true

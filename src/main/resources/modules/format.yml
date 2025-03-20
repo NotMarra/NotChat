@@ -1,0 +1,4 @@
+formats:
+  owner: "<red>[Owner] <gray>[<white>%player_name%<gray>]: <white>%message%"
+  vip: "<gold>[VIP] <gray>[<white>%player_name%<gray>]: <white>%message%"
+  default: "<gray>[<white>%player_name%<gray>]: <white>%message%"

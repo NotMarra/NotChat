@@ -121,23 +121,15 @@ public final class NotChat extends JavaPlugin {
         this.getLogger().info("Disabled successfully");
     }
 
-    public static NotChat getInstance() {
-        return instance;
-    }
+    public static NotChat getInstance() { return instance; }
 
-    public static Boolean hasVault() {
-        return Vault;
-    }
+    public static Boolean hasVault() { return Vault; }
 
     public static Boolean hasPAPI() { return PlaceholderAPI; }
 
-    public static Permission getPerms() {
-        return perms;
-    }
+    public static Permission getPerms() { return perms; }
 
-    public FileConfiguration getSubConfig(String file) {
-        return CONFIGS.get(file);
-    }
+    public FileConfiguration getSubConfig(String file) { return CONFIGS.get(file); }
 
     public void reloadConfig(String file) {
         File configFile = new File(getDataFolder(), file);
@@ -145,7 +137,5 @@ public final class NotChat extends JavaPlugin {
         CONFIGS.put(file, YamlConfiguration.loadConfiguration(configFile));
     }
 
-    public BaseNotListener getListener(String id) {
-        return LISTENERS.get(id);
-    }
+    public BaseNotListener getListener(String id) { return LISTENERS.get(id); }
 }

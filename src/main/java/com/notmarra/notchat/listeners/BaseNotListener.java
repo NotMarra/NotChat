@@ -44,7 +44,7 @@ public abstract class BaseNotListener implements Listener {
     public abstract String getId();
 
     public String getConfigFile() {
-        return getId() + ".yml";
+        return "modules/" + getId() + ".yml";
     }
 
     private String getModulePath() {
