@@ -6,5 +6,5 @@ modules:
   tags: true # TODO: Add this module
   tab: true
   color: true # TODO: Add this module
-  ping: true # TODO: Add this module - @NotMarra --> zahraje zvuk, title, actionbar, atd.
+  ping: true
   filter: true # TODO: Add this module - anti-spam, anti-advertise, anti-caps, anti-unicode atd.

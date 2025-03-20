@@ -15,6 +15,15 @@ permissions:
   notchat.ping.reload:
     description: Allows players to reload the configuration
     default: op
+  notchat.filter.bypass:
+    description: Allows players to bypass the chat filter
+    default: op
+  notchat.filter.reload:
+    description: Allows players to reload the configuration
+    default: op
+  notchat.color:
+    description: Allows players to set their chat color
+    default: op
 dependencies:
   server:
     PlaceholderAPI:

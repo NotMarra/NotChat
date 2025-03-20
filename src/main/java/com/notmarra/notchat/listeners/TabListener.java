@@ -10,12 +10,12 @@ import org.bukkit.event.player.PlayerCommandSendEvent;
 
 import com.notmarra.notchat.NotChat;
 
-public class TabCompletionListener extends BaseNotListener {
+public class TabListener extends BaseNotListener {
     public static final String ID = "tab";
 
     private Map<String, Command> knownCommands = new HashMap<>();
 
-    public TabCompletionListener(NotChat plugin) {
+    public TabListener(NotChat plugin) {
         super(plugin);
     }
 

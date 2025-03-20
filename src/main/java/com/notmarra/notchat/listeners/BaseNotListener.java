@@ -29,6 +29,10 @@ public abstract class BaseNotListener implements Listener {
         loadConfig();
     }
 
+    public boolean isModule() {
+        return true;
+    }
+
     public List<NotCommand> getNotCommands() {
         return List.of();
     }
@@ -75,14 +79,15 @@ public abstract class BaseNotListener implements Listener {
 
         initialize();
 
-        String modulePath = getModulePath();
+        if (isModule()) {
+            String modulePath = getModulePath();
+            if (!getPluginConfig().isBoolean(modulePath)) {
+                getLogger().warning("Module " + getId() + " has missing configuration '" + modulePath + "'!");
+                return;
+            }
 
-        if (!getPluginConfig().isBoolean(modulePath)) {
-            getLogger().warning("Module " + getId() + " has missing configuration '" + modulePath + "'!");
-            return;
+            if (!getPluginConfig().getBoolean(modulePath)) return;
         }
-
-        if (!getPluginConfig().getBoolean(modulePath)) return;
 
         plugin.getServer().getPluginManager().registerEvents(this, plugin);
         this.getLogger().info(getId().toUpperCase() + " module enabled");

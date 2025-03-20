@@ -135,7 +135,7 @@ public class PingListener extends BaseNotListener {
 
         ping.onExecute(ctx -> {
             ChatF.empty()
-                .appendBold("[NotChat PING] Commands:")
+                .appendBold("[NotChat " + getId().toUpperCase() + "] Commands:")
                 .nl()
                 .append("/ping reload - Reload the configuration")
                 .sendTo(ctx.getSource().getExecutor());
@@ -150,7 +150,7 @@ public class PingListener extends BaseNotListener {
                 reloadConfig();
 
                 ChatF.empty()
-                    .appendBold("PingPlugin configuration reloaded!", ChatF.C_GREEN)
+                    .appendBold(getId().toUpperCase() + " configuration reloaded!", ChatF.C_GREEN)
                     .sendTo(entity);
             } else {
                 ChatF.empty()

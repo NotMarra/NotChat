@@ -3,11 +3,13 @@ package com.notmarra.notchat;
 import com.notmarra.notchat.cmds.BaseNotCommandManager;
 import com.notmarra.notchat.cmds.GamesCommandManager;
 import com.notmarra.notchat.cmds.MessageCommandManager;
-import com.notmarra.notchat.listeners.ChatFormatListener;
-import com.notmarra.notchat.listeners.LocalChatListener;
+import com.notmarra.notchat.listeners.FormatListener;
+import com.notmarra.notchat.listeners.LocalListener;
+import com.notmarra.notchat.listeners.MainChatListener;
 import com.notmarra.notchat.listeners.BaseNotListener;
+import com.notmarra.notchat.listeners.FilterListener;
 import com.notmarra.notchat.listeners.PingListener;
-import com.notmarra.notchat.listeners.TabCompletionListener;
+import com.notmarra.notchat.listeners.TabListener;
 import com.notmarra.notchat.utils.MinecraftStuff;
 
 import net.milkbowl.vault.permission.Permission;
@@ -44,15 +46,19 @@ public final class NotChat extends JavaPlugin {
     }
 
     private void initListeners() {
+        LISTENERS.put(FilterListener.ID, new FilterListener(this));
+        LISTENERS.put(FormatListener.ID, new FormatListener(this));
+        LISTENERS.put(LocalListener.ID, new LocalListener(this));
         LISTENERS.put(PingListener.ID, new PingListener(this));
-        LISTENERS.put(ChatFormatListener.ID, new ChatFormatListener(this));
-        LISTENERS.put(LocalChatListener.ID, new LocalChatListener(this));
-        LISTENERS.put(TabCompletionListener.ID, new TabCompletionListener(this));
+        LISTENERS.put(TabListener.ID, new TabListener(this));
+
+        // main chat listener using FormatListener, FilterListener, and LocalListener
+        LISTENERS.put(MainChatListener.ID, new MainChatListener(this));
     }
 
     private void initCommandGroups() {
-        CMDMGRS.put(MessageCommandManager.ID, new MessageCommandManager(this));
         CMDMGRS.put(GamesCommandManager.ID, new GamesCommandManager(this));
+        CMDMGRS.put(MessageCommandManager.ID, new MessageCommandManager(this));
     }
 
     @Override

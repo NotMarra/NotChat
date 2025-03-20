@@ -27,18 +27,19 @@ import java.util.function.Function;
 public class GamesCommandManager extends BaseNotCommandManager {
     public static final String ID = "games";
 
-    private final Map<String, Function<NotChat, ChatGame>> gameConstructors = new HashMap<>();
+    private final Map<String, Function<NotChat, ChatGame>> gameConstructors = Map.of(
+        MathGame.ID, MathGame::new,
+        NumberGuessGame.ID, NumberGuessGame::new,
+        HangmanGame.ID, HangmanGame::new,
+        AnagramGame.ID, AnagramGame::new,
+        FastTypeGame.ID, FastTypeGame::new,
+        TrueOrFalseGame.ID, TrueOrFalseGame::new
+    );
+
     private final Map<UUID, ChatGame> activeGames = new HashMap<>();
 
     public GamesCommandManager(NotChat plugin) {
         super(plugin);
-
-        gameConstructors.put(MathGame.ID, MathGame::new);
-        gameConstructors.put(NumberGuessGame.ID, NumberGuessGame::new);
-        gameConstructors.put(HangmanGame.ID, HangmanGame::new);
-        gameConstructors.put(AnagramGame.ID, AnagramGame::new);
-        gameConstructors.put(FastTypeGame.ID, FastTypeGame::new);
-        gameConstructors.put(TrueOrFalseGame.ID, TrueOrFalseGame::new);
         startGameScheduler();
     }
 
