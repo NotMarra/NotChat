@@ -61,6 +61,11 @@ public class MainChatListener extends BaseNotListener {
             player.getServer().broadcast(ChatF.of(message).build());
         }
 
+        WorldListener world = (WorldListener) plugin.getListener(WorldListener.ID);
+        if (world != null && world.isEnabled()) {
+            world.sendMessage(player, ChatF.of(message));
+        }
+
         event.setCancelled(true);
     }
 }

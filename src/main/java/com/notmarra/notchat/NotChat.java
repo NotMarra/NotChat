@@ -10,6 +10,7 @@ import com.notmarra.notchat.listeners.BaseNotListener;
 import com.notmarra.notchat.listeners.FilterListener;
 import com.notmarra.notchat.listeners.PingListener;
 import com.notmarra.notchat.listeners.TabListener;
+import com.notmarra.notchat.listeners.WorldListener;
 import com.notmarra.notchat.utils.MinecraftStuff;
 
 import net.milkbowl.vault.permission.Permission;
@@ -51,6 +52,7 @@ public final class NotChat extends JavaPlugin {
         LISTENERS.put(LocalListener.ID, new LocalListener(this));
         LISTENERS.put(PingListener.ID, new PingListener(this));
         LISTENERS.put(TabListener.ID, new TabListener(this));
+        LISTENERS.put(WorldListener.ID, new WorldListener(this));
 
         // main chat listener using FormatListener, FilterListener, and LocalListener
         LISTENERS.put(MainChatListener.ID, new MainChatListener(this));

@@ -1,0 +1,7 @@
+groups:
+  group1:
+    - "world"
+    - "world2"
+  group2:
+    - "world3"
+    - "world4"

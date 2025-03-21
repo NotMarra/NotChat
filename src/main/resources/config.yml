@@ -15,7 +15,8 @@
 modules:
   format: true
   msg: true
-  local: true
+  local: false
+  world: false
   games: true
   tags: true # TODO: Add this module - menu, custom tags setuped in tags.yml
   tab: true
