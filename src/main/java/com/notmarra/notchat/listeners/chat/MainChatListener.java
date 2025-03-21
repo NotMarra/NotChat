@@ -1,7 +1,12 @@
-package com.notmarra.notchat.listeners;
+package com.notmarra.notchat.listeners.chat;
 
 import com.notmarra.notchat.NotChat;
-import com.notmarra.notchat.listeners.FilterListener.FilterResult;
+import com.notmarra.notchat.listeners.BaseNotListener;
+import com.notmarra.notchat.listeners.chat.modules.FilterChatListener;
+import com.notmarra.notchat.listeners.chat.modules.FormatChatListener;
+import com.notmarra.notchat.listeners.chat.modules.LocalChatListener;
+import com.notmarra.notchat.listeners.chat.modules.FilterChatListener.FilterResult;
+import com.notmarra.notchat.listeners.inventory.ColorChatInvListener;
 import com.notmarra.notlib.utils.ChatF;
 
 import io.papermc.paper.event.player.AsyncChatEvent;
@@ -36,7 +41,7 @@ public class MainChatListener extends BaseNotListener {
         Player player = event.getPlayer();
         String message = ChatF.empty().append(event.message()).buildString();
 
-        FilterListener filter = (FilterListener) plugin.getListener(FilterListener.ID);
+        FilterChatListener filter = plugin.getFilterChatListener();
         if (filter != null && filter.isEnabled()) {
             FilterResult result = filter.processMessage(player, message);
 
@@ -49,22 +54,30 @@ public class MainChatListener extends BaseNotListener {
             }
         }
 
-        FormatListener format = (FormatListener) plugin.getListener(FormatListener.ID);
+        FormatChatListener format = plugin.getFormatChatListener();
         if (format != null && format.isEnabled()) {
             message = format.formatMessage(player, message);
         }
 
-        LocalListener local = (LocalListener) plugin.getListener(LocalListener.ID);
-        if (local != null && local.isEnabled()) {
-            local.sendMessage(player, ChatF.of(message));
-        } else {
-            player.getServer().broadcast(ChatF.of(message).build());
+        ChatF finalMessage = ChatF.of(message);
+
+        ColorChatInvListener color = plugin.getColorChatInvListener();
+        if (color != null && color.isEnabled()) {
+            finalMessage = color.applyColorToMessage(player, message);
         }
 
-        WorldListener world = (WorldListener) plugin.getListener(WorldListener.ID);
-        if (world != null && world.isEnabled()) {
-            world.sendMessage(player, ChatF.of(message));
+        LocalChatListener local = plugin.getLocalChatListener();
+        if (local != null && local.isEnabled()) {
+            local.sendMessage(player, finalMessage);
+        } else {
+            getServer().broadcast(finalMessage.build());
         }
+
+        // TODO: this, don't forget for the local chat listener
+        // WorldListener world = (WorldListener) plugin.getListener(WorldListener.ID);
+        // if (world != null && world.isEnabled()) {
+        //     world.sendMessage(player, ChatF.of(message));
+        // }
 
         event.setCancelled(true);
     }

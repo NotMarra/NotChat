@@ -1,11 +1,10 @@
-package com.notmarra.notchat.listeners;
+package com.notmarra.notchat.listeners.chat.modules;
 
 import com.notmarra.notchat.NotChat;
+import com.notmarra.notchat.listeners.BaseNotListener;
 import com.notmarra.notlib.utils.ChatF;
 import com.notmarra.notlib.utils.command.NotCommand;
 import com.notmarra.notlib.utils.command.arguments.NotLiteralArg;
-
-import net.kyori.adventure.text.Component;
 
 import java.util.ArrayList;
 import java.util.HashSet;
@@ -20,7 +19,7 @@ import java.util.regex.Pattern;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
 
-public class FilterListenerNew extends BaseNotListener {
+public class FilterChatListener extends BaseNotListener {
     public static final String ID = "filter";
 
     public static final String PERMISSION_BYPASS = "notchat.filter.bypass";
@@ -62,7 +61,7 @@ public class FilterListenerNew extends BaseNotListener {
     private String bypassPermission;
     private boolean logFiltered;
 
-    public FilterListenerNew(NotChat plugin) {
+    public FilterChatListener(NotChat plugin) {
         super(plugin);
     }
 
@@ -166,25 +165,13 @@ public class FilterListenerNew extends BaseNotListener {
         return ping;
     }
 
-    private ChatF toError(String message) {
-        return ChatF.empty().appendBold(message, ChatF.C_RED);
-    }
-
-    public FilterResult processMessage(Player player, Component message) {
-        return processMessage(player, ChatF.of(message));
-    }
-
     public FilterResult processMessage(Player player, String message) {
-        return processMessage(player, ChatF.of(message));
-    }
-
-    public FilterResult processMessage(Player player, ChatF message) {
-        String builtMessage = message.buildString();
-        if (player.hasPermission(bypassPermission)) {
-            return FilterResult.ofFiltered(message);
+        if (!player.hasPermission(bypassPermission)) {
+            return new FilterResult(false, message);
         }
         
-        ChatF filteredMessage = message;
+        String filteredMessage = message;
+        boolean block = false;
         
         // Check for spam
         if (spamEnabled) {
@@ -193,7 +180,7 @@ public class FilterListenerNew extends BaseNotListener {
                 if (logFiltered) {
                     getLogger().info("Blocked spam message from " + player.getName() + ": " + message);
                 }
-                return FilterResult.ofBlocked(spamResult.getMessage());
+                return new FilterResult(true, null, spamResult.getMessage());
             }
         }
         
@@ -205,34 +192,38 @@ public class FilterListenerNew extends BaseNotListener {
                     if (logFiltered) {
                         getLogger().info("Blocked advertising from " + player.getName() + ": " + message);
                     }
-                    return FilterResult.ofBlocked(toError(adBlockMessage));
+                    return new FilterResult(true, null, adBlockMessage);
                 } else if (adAction.equals("REPLACE")) {
                     filteredMessage = adResult.getFilteredMessage();
                     if (logFiltered) {
                         getLogger().info("Filtered advertising from " + player.getName() + ": " + message + " -> " + filteredMessage);
                     }
                 } else if (adAction.equals("WARN")) {
-                    return FilterResult.ofBlocked(toError(adBlockMessage));
+                    ChatF.empty()
+                        .append(adBlockMessage, ChatF.C_RED)
+                        .sendTo(player);
                 }
             }
         }
         
         // Check for excessive caps
-        if (capsEnabled && builtMessage.length() >= capsMinLength) {
+        if (capsEnabled && message.length() >= capsMinLength) {
             CapsCheckResult capsResult = checkCaps(message);
             if (capsResult.isExcessiveCaps()) {
                 if (capsAction.equals("BLOCK")) {
                     if (logFiltered) {
                         getLogger().info("Blocked excessive caps from " + player.getName() + ": " + message);
                     }
-                    return FilterResult.ofBlocked(toError("Please don't use excessive caps."));
+                    return new FilterResult(true, null, "Please don't use excessive caps.");
                 } else if (capsAction.equals("CONVERT")) {
                     filteredMessage = capsResult.getFilteredMessage();
                     if (logFiltered) {
                         getLogger().info("Converted caps from " + player.getName() + ": " + message + " -> " + filteredMessage);
                     }
                 } else if (capsAction.equals("WARN")) {
-                    return FilterResult.ofBlocked(toError("Please don't use excessive caps."));
+                    ChatF.empty()
+                        .append("Please don't use excessive caps.", ChatF.C_RED)
+                        .sendTo(player);
                 }
             }
         }
@@ -245,22 +236,24 @@ public class FilterListenerNew extends BaseNotListener {
                     if (logFiltered) {
                         getLogger().info("Blocked unicode from " + player.getName() + ": " + message);
                     }
-                    return FilterResult.ofBlocked(toError("Please don't use excessive special characters."));
+                    return new FilterResult(true, null, "Please don't use excessive special characters.");
                 } else if (unicodeAction.equals("REPLACE")) {
                     filteredMessage = unicodeResult.getFilteredMessage();
                     if (logFiltered) {
                         getLogger().info("Replaced unicode from " + player.getName() + ": " + message + " -> " + filteredMessage);
                     }
                 } else if (unicodeAction.equals("WARN")) {
-                    return FilterResult.ofBlocked(toError("Please don't use excessive special characters."));
+                    ChatF.empty()
+                        .append("Please don't use excessive special characters.", ChatF.C_RED)
+                        .sendTo(player);
                 }
             }
         }
         
-        return FilterResult.ofFiltered(filteredMessage);
+        return new FilterResult(block, filteredMessage);
     }
     
-    private SpamCheckResult checkSpam(Player player, ChatF message) {
+    private SpamCheckResult checkSpam(Player player, String message) {
         UUID playerId = player.getUniqueId();
         long currentTime = System.currentTimeMillis();
         
@@ -271,23 +264,22 @@ public class FilterListenerNew extends BaseNotListener {
         if (!messageHistory.isEmpty()) {
             MessageData lastMessage = messageHistory.get(messageHistory.size() - 1);
             if (currentTime - lastMessage.getTimestamp() < spamCooldown) {
-                return new SpamCheckResult(true, toError("Please wait before sending another message."));
+                return new SpamCheckResult(true, "Please wait before sending another message.");
             }
         }
         
         // Check similar messages
-        String normalizedMessage = message.buildString().toLowerCase();
+        String normalizedMessage = message.toLowerCase();
         int similarCount = 0;
         
         for (int i = messageHistory.size() - 1; i >= 0 && i >= messageHistory.size() - maxSimilarMessages; i--) {
-            String lastMessage = messageHistory.get(i).getMessage().buildString().toLowerCase();
-            if (calculateSimilarity(normalizedMessage, lastMessage) > similarityThreshold) {
+            if (calculateSimilarity(normalizedMessage, messageHistory.get(i).getMessage().toLowerCase()) > similarityThreshold) {
                 similarCount++;
             }
         }
         
         if (similarCount >= maxSimilarMessages - 1) {
-            return new SpamCheckResult(true, toError("Please don't repeat similar messages."));
+            return new SpamCheckResult(true, "Please don't repeat similar messages.");
         }
         
         // Update message history
@@ -301,11 +293,10 @@ public class FilterListenerNew extends BaseNotListener {
         return new SpamCheckResult(false, null);
     }
     
-    private AdvertisingCheckResult checkAdvertising(ChatF message) {
-        String originalMessage = message.buildString();
-        String lowerMessage = originalMessage.toLowerCase();
+    private AdvertisingCheckResult checkAdvertising(String message) {
+        String lowerMessage = message.toLowerCase();
         boolean containsAdvertising = false;
-        String filteredMessage = originalMessage;
+        String filteredMessage = message;
         
         // Check for URLs
         Matcher urlMatcher = URL_PATTERN.matcher(lowerMessage);
@@ -335,18 +326,18 @@ public class FilterListenerNew extends BaseNotListener {
             }
         }
         
-        return new AdvertisingCheckResult(containsAdvertising, ChatF.of(filteredMessage));
+        return new AdvertisingCheckResult(containsAdvertising, filteredMessage);
     }
     
-    private CapsCheckResult checkCaps(ChatF message) {
-        if (message.buildString().length() < capsMinLength) {
+    private CapsCheckResult checkCaps(String message) {
+        if (message.length() < capsMinLength) {
             return new CapsCheckResult(false, message);
         }
         
         int upperCount = 0;
         int letterCount = 0;
         
-        for (char c : message.buildString().toCharArray()) {
+        for (char c : message.toCharArray()) {
             if (Character.isLetter(c)) {
                 letterCount++;
                 if (Character.isUpperCase(c)) {
@@ -358,19 +349,19 @@ public class FilterListenerNew extends BaseNotListener {
         if (letterCount > 0) {
             double percentage = (double) upperCount / letterCount * 100;
             if (percentage > capsMaxPercentage) {
-                return new CapsCheckResult(true, ChatF.of(message.buildString().toLowerCase()));
+                return new CapsCheckResult(true, message.toLowerCase());
             }
         }
         
         return new CapsCheckResult(false, message);
     }
     
-    private UnicodeCheckResult checkUnicode(ChatF message) {
+    private UnicodeCheckResult checkUnicode(String message) {
         int unicodeCount = 0;
         int totalCount = 0;
         StringBuilder filtered = new StringBuilder();
         
-        for (char c : message.buildString().toCharArray()) {
+        for (char c : message.toCharArray()) {
             totalCount++;
             
             if (c > 127) {
@@ -398,7 +389,7 @@ public class FilterListenerNew extends BaseNotListener {
         double percentage = totalCount > 0 ? (double) unicodeCount / totalCount * 100 : 0;
         boolean excessive = percentage > unicodeMaxPercentage || (blockUnicode && unicodeCount > 0);
         
-        return new UnicodeCheckResult(excessive, ChatF.of(filtered.toString()));
+        return new UnicodeCheckResult(excessive, filtered.toString());
     }
 
     private double calculateSimilarity(String s1, String s2) {
@@ -433,10 +424,14 @@ public class FilterListenerNew extends BaseNotListener {
     
     public static class FilterResult {
         private final boolean blocked;
-        private final ChatF filteredMessage;
-        private final ChatF blockMessage;
+        private final String filteredMessage;
+        private final String blockMessage;
         
-        public FilterResult(boolean blocked, ChatF filteredMessage, ChatF blockMessage) {
+        public FilterResult(boolean blocked, String filteredMessage) {
+            this(blocked, filteredMessage, null);
+        }
+        
+        public FilterResult(boolean blocked, String filteredMessage, String blockMessage) {
             this.blocked = blocked;
             this.filteredMessage = filteredMessage;
             this.blockMessage = blockMessage;
@@ -446,33 +441,25 @@ public class FilterListenerNew extends BaseNotListener {
             return blocked;
         }
         
-        public ChatF getFilteredMessage() {
+        public String getFilteredMessage() {
             return filteredMessage;
         }
         
-        public ChatF getBlockMessage() {
+        public String getBlockMessage() {
             return blockMessage;
-        }
-
-        public static FilterResult ofBlocked(ChatF blockMessage) {
-            return new FilterResult(true, null, blockMessage);
-        }
-
-        public static FilterResult ofFiltered(ChatF filteredMessage) {
-            return new FilterResult(false, filteredMessage, null);
         }
     }
     
     private static class MessageData {
-        private final ChatF message;
+        private final String message;
         private final long timestamp;
         
-        public MessageData(ChatF message, long timestamp) {
+        public MessageData(String message, long timestamp) {
             this.message = message;
             this.timestamp = timestamp;
         }
         
-        public ChatF getMessage() {
+        public String getMessage() {
             return message;
         }
         
@@ -483,9 +470,9 @@ public class FilterListenerNew extends BaseNotListener {
     
     private static class SpamCheckResult {
         private final boolean spam;
-        private final ChatF message;
+        private final String message;
         
-        public SpamCheckResult(boolean spam, ChatF message) {
+        public SpamCheckResult(boolean spam, String message) {
             this.spam = spam;
             this.message = message;
         }
@@ -494,16 +481,16 @@ public class FilterListenerNew extends BaseNotListener {
             return spam;
         }
         
-        public ChatF getMessage() {
+        public String getMessage() {
             return message;
         }
     }
     
     private static class AdvertisingCheckResult {
         private final boolean containsAdvertising;
-        private final ChatF filteredMessage;
+        private final String filteredMessage;
         
-        public AdvertisingCheckResult(boolean containsAdvertising, ChatF filteredMessage) {
+        public AdvertisingCheckResult(boolean containsAdvertising, String filteredMessage) {
             this.containsAdvertising = containsAdvertising;
             this.filteredMessage = filteredMessage;
         }
@@ -512,16 +499,16 @@ public class FilterListenerNew extends BaseNotListener {
             return containsAdvertising;
         }
         
-        public ChatF getFilteredMessage() {
+        public String getFilteredMessage() {
             return filteredMessage;
         }
     }
     
     private static class CapsCheckResult {
         private final boolean excessiveCaps;
-        private final ChatF filteredMessage;
+        private final String filteredMessage;
         
-        public CapsCheckResult(boolean excessiveCaps, ChatF filteredMessage) {
+        public CapsCheckResult(boolean excessiveCaps, String filteredMessage) {
             this.excessiveCaps = excessiveCaps;
             this.filteredMessage = filteredMessage;
         }
@@ -530,16 +517,16 @@ public class FilterListenerNew extends BaseNotListener {
             return excessiveCaps;
         }
         
-        public ChatF getFilteredMessage() {
+        public String getFilteredMessage() {
             return filteredMessage;
         }
     }
     
     private static class UnicodeCheckResult {
         private final boolean excessiveUnicode;
-        private final ChatF filteredMessage;
+        private final String filteredMessage;
         
-        public UnicodeCheckResult(boolean excessiveUnicode, ChatF filteredMessage) {
+        public UnicodeCheckResult(boolean excessiveUnicode, String filteredMessage) {
             this.excessiveUnicode = excessiveUnicode;
             this.filteredMessage = filteredMessage;
         }
@@ -548,7 +535,7 @@ public class FilterListenerNew extends BaseNotListener {
             return excessiveUnicode;
         }
         
-        public ChatF getFilteredMessage() {
+        public String getFilteredMessage() {
             return filteredMessage;
         }
     }

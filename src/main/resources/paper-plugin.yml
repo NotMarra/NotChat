@@ -24,6 +24,9 @@ permissions:
   notchat.color:
     description: Allows players to set their chat color
     default: op
+  notchat.color.reload:
+    description: Allows players to reload the configuration
+    default: op
 dependencies:
   server:
     PlaceholderAPI:

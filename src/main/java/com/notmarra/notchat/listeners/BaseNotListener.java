@@ -8,6 +8,7 @@ import io.papermc.paper.plugin.lifecycle.event.types.LifecycleEvents;
 import java.util.List;
 import java.util.logging.Logger;
 
+import org.bukkit.Server;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.event.Listener;
 
@@ -65,12 +66,12 @@ public abstract class BaseNotListener implements Listener {
         return plugin.getConfig();
     }
 
-    public Logger getLogger() {
-        return plugin.getLogger();
+    public Server getServer() {
+        return plugin.getServer();
     }
 
-    public BaseNotListener getListener(String id) {
-        return plugin.getListener(id);
+    public Logger getLogger() {
+        return plugin.getLogger();
     }
 
     public void register() {

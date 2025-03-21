@@ -1,16 +1,17 @@
-package com.notmarra.notchat.listeners;
+package com.notmarra.notchat.listeners.chat.modules;
 
 import com.notmarra.notchat.NotChat;
+import com.notmarra.notchat.listeners.BaseNotListener;
 import com.notmarra.notlib.utils.ChatF;
 
 import org.bukkit.entity.Player;
 
-public class LocalListener extends BaseNotListener {
+public class LocalChatListener extends BaseNotListener {
     public static final String ID = "local";
 
     private double radius;
 
-    public LocalListener(NotChat plugin) {
+    public LocalChatListener(NotChat plugin) {
         super(plugin);
     }
 

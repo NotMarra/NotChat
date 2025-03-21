@@ -1,4 +1,4 @@
-package com.notmarra.notchat.listeners;
+package com.notmarra.notchat.listeners.chat.modules;
 
 import java.util.List;
 import java.util.regex.Matcher;
@@ -14,13 +14,14 @@ import org.bukkit.event.EventHandler;
 import org.bukkit.event.player.PlayerCommandPreprocessEvent;
 
 import com.notmarra.notchat.NotChat;
+import com.notmarra.notchat.listeners.BaseNotListener;
 import com.notmarra.notlib.utils.ChatF;
 import com.notmarra.notlib.utils.command.NotCommand;
 import com.notmarra.notlib.utils.command.arguments.NotLiteralArg;
 
 import io.papermc.paper.event.player.AsyncChatEvent;
 
-public class PingListener extends BaseNotListener {
+public class PingChatListener extends BaseNotListener {
     public static final String ID = "ping";
 
     private boolean messageEnabled;
@@ -36,7 +37,7 @@ public class PingListener extends BaseNotListener {
     public static final String PERMISSION_RECEIVE = "notchat.ping.receive";
     public static final String PERMISSION_RELOAD = "notchat.ping.reload";
 
-    public PingListener(NotChat plugin) {
+    public PingChatListener(NotChat plugin) {
         super(plugin);
     }
 

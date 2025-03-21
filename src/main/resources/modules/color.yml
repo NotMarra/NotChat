@@ -1,0 +1,36 @@
+# Default color for players with the default permission
+# Available colors: BLACK, DARK_BLUE, DARK_GREEN, DARK_AQUA, DARK_RED,
+# DARK_PURPLE, GOLD, GRAY, DARK_GRAY, BLUE, GREEN, AQUA, RED, LIGHT_PURPLE,
+# YELLOW, WHITE
+default_color: ""
+
+# Whether to color player names in chat
+color_names: false
+
+# List of allowed colors (remove colors you don't want players to use)
+allowed_colors:
+  - BLACK
+  - DARK_BLUE
+  - DARK_GREEN
+  - DARK_AQUA
+  - DARK_RED
+  - DARK_PURPLE
+  - GOLD
+  - GRAY
+  - DARK_GRAY
+  - BLUE
+  - GREEN
+  - AQUA
+  - RED
+  - LIGHT_PURPLE
+  - YELLOW
+  - WHITE
+
+# Permission structure
+permissions:
+  # Permission to use the /color command
+  use: "notchat.color"
+  
+  # Permission format for specific colors
+  # For example, notchat.color.red gives access to red
+  specific_color: "notchat.color.%color%"

@@ -1,6 +1,7 @@
-package com.notmarra.notchat.listeners;
+package com.notmarra.notchat.listeners.chat.modules;
 
 import com.notmarra.notchat.NotChat;
+import com.notmarra.notchat.listeners.BaseNotListener;
 import com.notmarra.notlib.utils.ChatF;
 
 import io.papermc.paper.event.player.AsyncChatEvent;
@@ -8,12 +9,12 @@ import io.papermc.paper.event.player.AsyncChatEvent;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.Player;
 
-public class FormatListener extends BaseNotListener {
+public class FormatChatListener extends BaseNotListener {
     public static final String ID = "format";
 
     private ConfigurationSection formats;
 
-    public FormatListener(NotChat plugin) {
+    public FormatChatListener(NotChat plugin) {
         super(plugin);
     }
 

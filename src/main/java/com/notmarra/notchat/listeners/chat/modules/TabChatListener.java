@@ -1,4 +1,4 @@
-package com.notmarra.notchat.listeners;
+package com.notmarra.notchat.listeners.chat.modules;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -9,13 +9,14 @@ import org.bukkit.event.EventHandler;
 import org.bukkit.event.player.PlayerCommandSendEvent;
 
 import com.notmarra.notchat.NotChat;
+import com.notmarra.notchat.listeners.BaseNotListener;
 
-public class TabListener extends BaseNotListener {
+public class TabChatListener extends BaseNotListener {
     public static final String ID = "tab";
 
     private Map<String, Command> knownCommands = new HashMap<>();
 
-    public TabListener(NotChat plugin) {
+    public TabChatListener(NotChat plugin) {
         super(plugin);
     }
 
@@ -49,7 +50,7 @@ public class TabListener extends BaseNotListener {
         super.register();
 
         Bukkit.getScheduler().runTaskLater(plugin, () -> {
-            this.knownCommands = plugin.getServer().getCommandMap().getKnownCommands();
+            this.knownCommands = getServer().getCommandMap().getKnownCommands();
         }, 20L);
     }
 }

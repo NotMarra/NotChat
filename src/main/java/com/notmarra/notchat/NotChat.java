@@ -3,14 +3,15 @@ package com.notmarra.notchat;
 import com.notmarra.notchat.cmds.BaseNotCommandManager;
 import com.notmarra.notchat.cmds.GamesCommandManager;
 import com.notmarra.notchat.cmds.MessageCommandManager;
-import com.notmarra.notchat.listeners.FormatListener;
-import com.notmarra.notchat.listeners.LocalListener;
-import com.notmarra.notchat.listeners.MainChatListener;
+import com.notmarra.notchat.listeners.chat.modules.LocalChatListener;
+import com.notmarra.notchat.listeners.chat.modules.PingChatListener;
+import com.notmarra.notchat.listeners.chat.MainChatListener;
 import com.notmarra.notchat.listeners.BaseNotListener;
-import com.notmarra.notchat.listeners.FilterListener;
-import com.notmarra.notchat.listeners.PingListener;
-import com.notmarra.notchat.listeners.TabListener;
-import com.notmarra.notchat.listeners.WorldListener;
+import com.notmarra.notchat.listeners.chat.modules.FilterChatListener;
+import com.notmarra.notchat.listeners.chat.modules.FormatChatListener;
+import com.notmarra.notchat.listeners.chat.modules.TabChatListener;
+import com.notmarra.notchat.listeners.chat.modules.WorldListener;
+import com.notmarra.notchat.listeners.inventory.ColorChatInvListener;
 import com.notmarra.notchat.utils.MinecraftStuff;
 
 import net.milkbowl.vault.permission.Permission;
@@ -47,14 +48,15 @@ public final class NotChat extends JavaPlugin {
     }
 
     private void initListeners() {
-        LISTENERS.put(FilterListener.ID, new FilterListener(this));
-        LISTENERS.put(FormatListener.ID, new FormatListener(this));
-        LISTENERS.put(LocalListener.ID, new LocalListener(this));
-        LISTENERS.put(PingListener.ID, new PingListener(this));
-        LISTENERS.put(TabListener.ID, new TabListener(this));
+        LISTENERS.put(FilterChatListener.ID, new FilterChatListener(this));
+        LISTENERS.put(FormatChatListener.ID, new FormatChatListener(this));
+        LISTENERS.put(LocalChatListener.ID, new LocalChatListener(this));
+        LISTENERS.put(PingChatListener.ID, new PingChatListener(this));
+        LISTENERS.put(TabChatListener.ID, new TabChatListener(this));
+        LISTENERS.put(ColorChatInvListener.ID, new ColorChatInvListener(this));
         LISTENERS.put(WorldListener.ID, new WorldListener(this));
 
-        // main chat listener using FormatListener, FilterListener, and LocalListener
+        // main chat listener using format, filter, and local
         LISTENERS.put(MainChatListener.ID, new MainChatListener(this));
     }
 
@@ -123,15 +125,23 @@ public final class NotChat extends JavaPlugin {
         this.getLogger().info("Disabled successfully");
     }
 
-    public static NotChat getInstance() { return instance; }
+    public static NotChat getInstance() {
+        return instance;
+    }
 
-    public static Boolean hasVault() { return Vault; }
+    public static Boolean hasVault() {
+        return Vault;
+    }
 
     public static Boolean hasPAPI() { return PlaceholderAPI; }
 
-    public static Permission getPerms() { return perms; }
+    public static Permission getPerms() {
+        return perms;
+    }
 
-    public FileConfiguration getSubConfig(String file) { return CONFIGS.get(file); }
+    public FileConfiguration getSubConfig(String file) {
+        return CONFIGS.get(file);
+    }
 
     public void reloadConfig(String file) {
         File configFile = new File(getDataFolder(), file);
@@ -139,5 +149,11 @@ public final class NotChat extends JavaPlugin {
         CONFIGS.put(file, YamlConfiguration.loadConfiguration(configFile));
     }
 
-    public BaseNotListener getListener(String id) { return LISTENERS.get(id); }
+    public FilterChatListener getFilterChatListener() { return (FilterChatListener) LISTENERS.get(FilterChatListener.ID); }
+    public FormatChatListener getFormatChatListener() { return (FormatChatListener) LISTENERS.get(FormatChatListener.ID); }
+    public LocalChatListener getLocalChatListener() { return (LocalChatListener) LISTENERS.get(LocalChatListener.ID); }
+    public PingChatListener getPingChatListener() { return (PingChatListener) LISTENERS.get(PingChatListener.ID); }
+    public TabChatListener getTabChatListener() { return (TabChatListener) LISTENERS.get(TabChatListener.ID); }
+    public ColorChatInvListener getColorChatInvListener() { return (ColorChatInvListener) LISTENERS.get(ColorChatInvListener.ID); }
+    public WorldListener getWorldListener() { return (WorldListener) LISTENERS.get(WorldListener.ID); }
 }

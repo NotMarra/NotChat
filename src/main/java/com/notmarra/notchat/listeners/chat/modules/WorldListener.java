@@ -1,9 +1,10 @@
-package com.notmarra.notchat.listeners;
+package com.notmarra.notchat.listeners.chat.modules;
 
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.Player;
 
 import com.notmarra.notchat.NotChat;
+import com.notmarra.notchat.listeners.BaseNotListener;
 import com.notmarra.notlib.utils.ChatF;
 
 public class WorldListener extends BaseNotListener {
@@ -39,7 +40,7 @@ public class WorldListener extends BaseNotListener {
         String playerWorld = player.getWorld().getName();
         for (String group : groups.getKeys(false)) {
             if (groups.getStringList(group).contains(playerWorld)) {
-                for (Player p : player.getServer().getOnlinePlayers()) {
+                for (Player p : getServer().getOnlinePlayers()) {
                     if (groups.getStringList(group).contains(p.getWorld().getName())) {
                         p.sendMessage(message.toString());
                     }
