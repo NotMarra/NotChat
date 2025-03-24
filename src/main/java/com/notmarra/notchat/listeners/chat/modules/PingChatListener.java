@@ -8,7 +8,6 @@ import org.bukkit.Bukkit;
 import org.bukkit.NamespacedKey;
 import org.bukkit.Registry;
 import org.bukkit.Sound;
-import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.player.PlayerCommandPreprocessEvent;
@@ -17,7 +16,6 @@ import com.notmarra.notchat.NotChat;
 import com.notmarra.notchat.listeners.BaseNotListener;
 import com.notmarra.notlib.utils.ChatF;
 import com.notmarra.notlib.utils.command.NotCommand;
-import com.notmarra.notlib.utils.command.arguments.NotLiteralArg;
 
 import io.papermc.paper.event.player.AsyncChatEvent;
 
@@ -132,36 +130,30 @@ public class PingChatListener extends BaseNotListener {
     }
 
     NotCommand pingCommand() {
-        NotCommand ping = new NotCommand("ping");
-
-        ping.onExecute(ctx -> {
+        NotCommand command = NotCommand.of("ping", cmd -> {
             ChatF.empty()
                 .appendBold("[NotChat " + getId().toUpperCase() + "] Commands:")
                 .nl()
                 .append("/ping reload - Reload the configuration")
-                .sendTo(ctx.getSource().getExecutor());
+                .sendTo(cmd.getPlayer());
         });
 
-        NotLiteralArg reload = new NotLiteralArg("reload");
+        command.literalArg("reload", arg -> {
+            Player player = arg.getPlayer();
 
-        reload.onExecute(ctx -> {
-            Entity entity = ctx.getSource().getExecutor();
-
-            if (entity.hasPermission(PERMISSION_RELOAD)) {
+            if (player.hasPermission(PERMISSION_RELOAD)) {
                 reloadConfig();
 
                 ChatF.empty()
                     .appendBold(getId().toUpperCase() + " configuration reloaded!", ChatF.C_GREEN)
-                    .sendTo(entity);
+                    .sendTo(player);
             } else {
                 ChatF.empty()
                     .appendBold("You don't have permission to use this command!", ChatF.C_RED)
-                    .sendTo(entity);
+                    .sendTo(player);
             }
         });
 
-        ping.addArg(reload);
-
-        return ping;
+        return command;
     }
 }

@@ -6,7 +6,6 @@ import java.util.Map;
 import java.util.UUID;
 
 import org.bukkit.Material;
-import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.inventory.InventoryClickEvent;
@@ -19,7 +18,8 @@ import com.notmarra.notchat.listeners.BaseNotListener;
 import com.notmarra.notchat.listeners.inventory.ColorChatInvHolder.ChatColor;
 import com.notmarra.notlib.utils.ChatF;
 import com.notmarra.notlib.utils.command.NotCommand;
-import com.notmarra.notlib.utils.command.arguments.NotLiteralArg;
+
+import net.kyori.adventure.text.Component;
 
 public class ColorChatInvListener extends BaseNotListener {
     public static final String ID = "color";
@@ -109,15 +109,15 @@ public class ColorChatInvListener extends BaseNotListener {
         return openInventories.remove(playerId) != null;
     }
     
-    public ChatF applyColorToMessage(Player player, String message) {
+    public Component applyColorToMessage(Player player, String message) {
         UUID playerId = player.getUniqueId();
         
         if (playerColors.containsKey(playerId)) {
             ChatColor color = playerColors.get(playerId);
-            return ChatF.of(message, color.getColor());
+            return ChatF.of(message, color.getColor()).build();
         }
         
-        return ChatF.of(message);
+        return ChatF.of(message).build();
     }
 
     @EventHandler
@@ -151,19 +151,11 @@ public class ColorChatInvListener extends BaseNotListener {
     }
 
     private NotCommand colorCommand() {
-        NotCommand color = new NotCommand("color");
-
-        color.onExecute(ctx -> {
-            Entity entity = ctx.getSource().getExecutor();
-
-            if (entity instanceof Player player) {
-                openColorSelection(player);
-            }
+        NotCommand command =  NotCommand.of("color", cmd -> {
+            openColorSelection(cmd.getPlayer());
         });
 
-        // help
-        NotLiteralArg help = new NotLiteralArg("help");
-        help.onExecute(ctx -> {
+        command.literalArg("help", arg -> {
             ChatF.empty()
                 .appendBold("[NotChat " + getId().toUpperCase() + "] Commands:")
                 .nl()
@@ -172,50 +164,43 @@ public class ColorChatInvListener extends BaseNotListener {
                 .append("/color reload - Reload the configuration")
                 .nl()
                 .append("/color clear - Reset your chat color")
-                .sendTo(ctx.getSource().getExecutor());
+                .sendTo(arg.getPlayer());
         });
-        color.addArg(help);
 
-        // reload
-        NotLiteralArg reload = new NotLiteralArg("reload");
         // TODO: this?
         // reload.setPermission(PERMISSION_RELOAD);
-        reload.onExecute(ctx -> {
-            Entity entity = ctx.getSource().getExecutor();
+        command.literalArg("reload", arg -> {
+            Player player = arg.getPlayer();
 
-            if (entity.hasPermission(PERMISSION_RELOAD)) {
+            if (player.hasPermission(PERMISSION_RELOAD)) {
                 reloadConfig();
 
                 ChatF.empty()
                     .appendBold(getId().toUpperCase() + " configuration reloaded!", ChatF.C_GREEN)
-                    .sendTo(entity);
+                    .sendTo(player);
             } else {
                 ChatF.empty()
                     .appendBold("You don't have permission to use this command!", ChatF.C_RED)
-                    .sendTo(entity);
+                    .sendTo(player);
             }
         });
-        color.addArg(reload);
 
-        // clear
-        NotLiteralArg clear = new NotLiteralArg("clear");
-        clear.onExecute(ctx -> {
-            Entity entity = ctx.getSource().getExecutor();
+        command.literalArg("clear", arg -> {
+            Player player = arg.getPlayer();
 
-            if (entity.hasPermission(PERMISSION_COLOR)) {
-                playerColors.remove(entity.getUniqueId());
+            if (player.hasPermission(PERMISSION_COLOR)) {
+                playerColors.remove(player.getUniqueId());
 
                 ChatF.empty()
                     .appendBold("Your chat color has been reset!", ChatF.C_GREEN)
-                    .sendTo(entity);
+                    .sendTo(player);
             } else {
                 ChatF.empty()
                     .appendBold("You don't have permission to use this command!", ChatF.C_RED)
-                    .sendTo(entity);
+                    .sendTo(player);
             }
         });
-        color.addArg(clear);
 
-        return color;
+        return command;
     }
 }

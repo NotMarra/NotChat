@@ -4,7 +4,6 @@ import com.notmarra.notchat.NotChat;
 import com.notmarra.notchat.listeners.BaseNotListener;
 import com.notmarra.notlib.utils.ChatF;
 import com.notmarra.notlib.utils.command.NotCommand;
-import com.notmarra.notlib.utils.command.arguments.NotLiteralArg;
 
 import java.util.ArrayList;
 import java.util.HashSet;
@@ -16,7 +15,6 @@ import java.util.concurrent.ConcurrentHashMap;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
 
 public class FilterChatListener extends BaseNotListener {
@@ -132,37 +130,31 @@ public class FilterChatListener extends BaseNotListener {
     }
 
     NotCommand filterCommand() {
-        NotCommand ping = new NotCommand("filter");
-
-        ping.onExecute(ctx -> {
+        NotCommand command = NotCommand.of("filter", cmd -> {
             ChatF.empty()
                 .appendBold("[NotChat " + getId().toUpperCase() + "] Commands:")
                 .nl()
                 .append("/filter reload - Reload the configuration")
-                .sendTo(ctx.getSource().getExecutor());
+                .sendTo(cmd.getPlayer());
         });
 
-        NotLiteralArg reload = new NotLiteralArg("reload");
+        command.literalArg("reload", arg -> {
+            Player player = arg.getPlayer();
 
-        reload.onExecute(ctx -> {
-            Entity entity = ctx.getSource().getExecutor();
-
-            if (entity.hasPermission(PERMISSION_RELOAD)) {
+            if (player.hasPermission(PERMISSION_RELOAD)) {
                 reloadConfig();
 
                 ChatF.empty()
                     .appendBold(getId().toUpperCase() + " configuration reloaded!", ChatF.C_GREEN)
-                    .sendTo(entity);
+                    .sendTo(player);
             } else {
                 ChatF.empty()
                     .appendBold("You don't have permission to use this command!", ChatF.C_RED)
-                    .sendTo(entity);
+                    .sendTo(player);
             }
         });
 
-        ping.addArg(reload);
-
-        return ping;
+        return command;
     }
 
     public FilterResult processMessage(Player player, String message) {

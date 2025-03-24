@@ -11,11 +11,8 @@ import com.notmarra.notchat.games.number_guess.NumberGuessGame;
 import com.notmarra.notchat.games.true_or_false.TrueOrFalseGame;
 import com.notmarra.notlib.utils.ChatF;
 import com.notmarra.notlib.utils.command.NotCommand;
-import com.notmarra.notlib.utils.command.arguments.NotGreedyStringArg;
-import com.notmarra.notlib.utils.command.arguments.NotStringArg;
 
 import org.bukkit.Bukkit;
-import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
 
 import java.util.HashMap;
@@ -71,39 +68,35 @@ public class GamesCommandManager extends BaseNotCommandManager {
     }
 
     private NotCommand startGameCommand() {
-        NotCommand gameCmd = new NotCommand("game");
-
-        NotStringArg gameTypeArg = new NotStringArg("gameType");
-        gameTypeArg.setSuggestions(getGameTypes());
-        gameTypeArg.onExecute(ctx -> {
-            Entity entity = ctx.getSource().getExecutor();
-            if (!(entity instanceof Player player)) return;
-
-            if (hasActiveGame(player)) {                    
-                ChatF.of("Máš již aktivní hru").sendTo(player);
-                return;
-            }
-
-            String gameType = gameTypeArg.get(ctx).trim();
-            if (!getGameTypes().contains(gameType)) {
-                ChatF.of("Neznámý typ hry: " + gameType).sendTo(player);
-                return;
-            }
-            
-            startGame(player, gameType);
+        NotCommand command = NotCommand.of("game", cmd -> {
+            ChatF.of("Musíš zadat typ hry").sendTo(cmd.getPlayer());
         });
 
-        gameCmd.addArg(gameTypeArg);
+        command.stringArg("gameType")
+            .setSuggestions(getGameTypes())
+            .onExecute(arg -> {
+                Player player = arg.getPlayer();
 
-        return gameCmd;
+                if (hasActiveGame(player)) {                    
+                    ChatF.of("Máš již aktivní hru").sendTo(player);
+                    return;
+                }
+
+                String gameType = arg.get().trim();
+                if (!getGameTypes().contains(gameType)) {
+                    ChatF.of("Neznámý typ hry: " + gameType).sendTo(player);
+                    return;
+                }
+                
+                startGame(player, gameType);
+            });
+
+        return command;
     }
 
     private NotCommand leaveGameCommand() {
-        NotCommand leaveCmd = new NotCommand("leave");
-
-        leaveCmd.onExecute(ctx -> {
-            Entity entity = ctx.getSource().getExecutor();
-            if (!(entity instanceof Player player)) return;
+        return NotCommand.of("leave", cmd -> {
+            Player player = cmd.getPlayer();
 
             if (!hasActiveGame(player)) {
                 ChatF.of("Nemáš aktivní hru").sendTo(player);
@@ -113,59 +106,39 @@ public class GamesCommandManager extends BaseNotCommandManager {
             removeGame(player);
             ChatF.of("Hra ukončena").sendTo(player);
         });
-
-        return leaveCmd;
     }
 
     private NotCommand hintCommand() {
-        NotCommand answerCmd = new NotCommand("hint");
-
-        answerCmd.onExecute(ctx -> {
-            Entity entity = ctx.getSource().getExecutor();
-            if (!(entity instanceof Player player)) return;
+        return NotCommand.of("hint", cmd -> {
+            Player player = cmd.getPlayer();
 
             if (!hasActiveGame(player)) {
                 ChatF.of("Nemáš aktivní hru").sendTo(player);
                 return;
             }
-            
+
             ChatGame game = getActiveGame(player);
             game.onHint(player).sendTo(player);
         });
-
-        return answerCmd;
     }
 
     private NotCommand answerCommand() {
-        NotCommand answerCmd = new NotCommand("answer");
-        answerCmd.onExecute(ctx -> {
-            Entity entity = ctx.getSource().getExecutor();
-            ChatF.of("Musíš zadat odpověď").sendTo(entity);
+        NotCommand command = NotCommand.of("answer", cmd -> {
+            ChatF.of("Musíš zadat odpověď").sendTo(cmd.getPlayer());
         });
 
-        NotGreedyStringArg answerArg = new NotGreedyStringArg("answer");
-        answerArg.onExecute(ctx -> {
-            Entity entity = ctx.getSource().getExecutor();
-            if (!(entity instanceof Player player)) return;
+        command.stringArg("answer", arg -> {
+            Player player = arg.getPlayer();
 
             if (!hasActiveGame(player)) {
                 ChatF.of("Nemáš aktivní hru").sendTo(player);
                 return;
             }
 
-            String answer = answerArg.get(ctx);
-
-            if (answer.trim().isEmpty()) {
-                ChatF.of("Neplatná odpověď").sendTo(player);
-                return;
-            }
-
-            handlePlayerAnswer(player, answer);
+            handlePlayerAnswer(player, arg.get());
         });
 
-        answerCmd.addArg(answerArg);
-
-        return answerCmd;
+        return command;
     }
 
     public List<String> getGameTypes() {

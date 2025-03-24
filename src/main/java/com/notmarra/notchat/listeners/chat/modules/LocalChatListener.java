@@ -4,6 +4,8 @@ import com.notmarra.notchat.NotChat;
 import com.notmarra.notchat.listeners.BaseNotListener;
 import com.notmarra.notlib.utils.ChatF;
 
+import net.kyori.adventure.text.Component;
+
 import org.bukkit.entity.Player;
 
 public class LocalChatListener extends BaseNotListener {
@@ -28,6 +30,10 @@ public class LocalChatListener extends BaseNotListener {
     @Override
     public void loadConfig() {
         radius = config.getDouble("radius");
+    }
+
+    public void sendMessage(Player player, Component message) {
+        sendMessage(player, ChatF.of(message));
     }
 
     public void sendMessage(Player player, ChatF message) {

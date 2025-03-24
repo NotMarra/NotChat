@@ -55,17 +55,16 @@ public class FormatChatListener extends BaseNotListener {
         return "default";
     }
 
-    public String formatMessage(Player player, AsyncChatEvent event) {
-        return formatMessage(player, ChatF.of(event.message()).buildString());
+    public ChatF formatMessage(Player player, AsyncChatEvent event) {
+        return formatMessage(player, ChatF.of(event.message()).build());
     }
 
-    public String formatMessage(Player player, String message) {
+    public ChatF formatMessage(Player player, Object message) {
         String formatType = getFormat(player);
 
         return ChatF.empty()
             .append(formats.getString(formatType))
             .withPlayer(player)
-            .replace(ChatF.K_MESSAGE, message)
-            .buildString();
+            .replace(ChatF.K_MESSAGE, message);
     }
 }

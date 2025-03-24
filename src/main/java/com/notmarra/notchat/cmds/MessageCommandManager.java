@@ -3,10 +3,8 @@ package com.notmarra.notchat.cmds;
 import com.notmarra.notchat.NotChat;
 import com.notmarra.notlib.utils.ChatF;
 import com.notmarra.notlib.utils.command.NotCommand;
-import com.notmarra.notlib.utils.command.arguments.NotPlayerArg;
-import com.notmarra.notlib.utils.command.arguments.NotStringArg;
+import com.notmarra.notlib.utils.command.arguments.NotPlayersArg;
 
-import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
 
 import java.util.ArrayList;
@@ -54,47 +52,30 @@ public class MessageCommandManager extends BaseNotCommandManager {
     }
 
     private NotCommand messageCommand(String name) {
-        NotCommand cmd = new NotCommand(name);
-
-        cmd.onExecute((ctx) -> {
-            Entity entity = ctx.getSource().getExecutor();
-            ChatF.of(messageUsage).sendTo(entity);
+        NotCommand command = NotCommand.of(name, cmd -> {
+            ChatF.of(messageUsage).sendTo(cmd.getPlayer());
         });
 
-        NotPlayerArg players = new NotPlayerArg("player");
-        players.onExecute(ctx -> {
-            Entity entity = ctx.getSource().getExecutor();
-            ChatF.of(messageUsage).sendTo(entity);
+        NotPlayersArg players = command.playersArg("player", arg -> {
+            ChatF.of(messageUsage).sendTo(arg.getPlayer());
         });
 
-        NotStringArg message = new NotStringArg("message");
-        message.onExecute(ctx -> {
-            List<Player> targetPlayers = players.get(ctx);
-            String msg = message.get(ctx);
-            Entity senderEntity = ctx.getSource().getExecutor();
-
-            if (!(senderEntity instanceof Player)) return;
-
-            for (Player targetPlayer : targetPlayers) {
-                // Send message to sender
+        players.greedyStringArg("message", arg -> {
+            for (Player targetPlayer : players.get()) {
                 ChatF.of(messageSender)
-                    .withPlayer((Player) senderEntity)
+                    .withPlayer(arg.getPlayer())
                     .withTargetPlayer(targetPlayer)
-                    .replace(ChatF.K_MESSAGE, msg)
-                    .sendTo(senderEntity);
+                    .replace(ChatF.K_MESSAGE, arg.get())
+                    .sendTo(arg.getPlayer());
 
-                // Send message to receiver
                 ChatF.of(messageReceiver)
-                    .withPlayer((Player) senderEntity)
+                    .withPlayer(arg.getPlayer())
                     .withTargetPlayer(targetPlayer)
-                    .replace(ChatF.K_MESSAGE, msg)
+                    .replace(ChatF.K_MESSAGE, arg.get())
                     .sendTo(targetPlayer);
             }
         });
 
-        players.addArg(message);
-        cmd.addArg(players);
-
-        return cmd;
+        return command;
     }
 }

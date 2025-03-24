@@ -46,7 +46,8 @@ public class ColorChatInvHolder implements InventoryHolder {
 
     private Inventory prepareInventory() {
         int rows = (int) Math.ceil(colorMaterials.size() / 9.0);
-        Inventory inventory = plugin.getServer().createInventory(this, rows * 9);
+        ChatF title = ChatF.of("Select Chat Color", ChatF.C_BLACK);
+        Inventory inventory = plugin.getServer().createInventory(this, rows * 9, title.build());
         
         ItemStack clearItem = new ItemStack(Material.BARRIER);
         ItemMeta clearMeta = clearItem.getItemMeta();
