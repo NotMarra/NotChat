@@ -11,8 +11,8 @@ import org.bukkit.entity.Player;
 import com.notmarra.notchat.NotChat;
 import com.notmarra.notchat.games.ChatGame;
 import com.notmarra.notchat.games.ChatGameResponse;
+import com.notmarra.notlib.extensions.NotMinecraftStuff;
 import com.notmarra.notlib.utils.ChatF;
-import com.notmarra.notchat.utils.MinecraftStuff;
 
 public class HangmanGame extends ChatGame {
     public static String ID = "hangman";
@@ -53,26 +53,26 @@ public class HangmanGame extends ChatGame {
         
         // Add words from enabled categories
         if (minecraftBlocks) {
-            allWords.addAll(MinecraftStuff.getInstance().blockIdNames);
+            allWords.addAll(NotMinecraftStuff.getInstance().blockIdNames);
         }
         
         if (minecraftItems) {
-            allWords.addAll(MinecraftStuff.getInstance().itemIdNames);
+            allWords.addAll(NotMinecraftStuff.getInstance().itemIdNames);
         }
         
         if (minecraftMobs) {
-            allWords.addAll(MinecraftStuff.getInstance().entityIdNames);
+            allWords.addAll(NotMinecraftStuff.getInstance().entityIdNames);
         }
         
         if (minecraftBiomes) {
-            allWords.addAll(MinecraftStuff.getInstance().biomeIdNames);
+            allWords.addAll(NotMinecraftStuff.getInstance().biomeIdNames);
         }
         
         allWords.addAll(customWords);
         
         // if no categories, use a default set
         if (allWords.isEmpty()) {
-            allWords.addAll(MinecraftStuff.getInstance().blockIdNames);
+            allWords.addAll(NotMinecraftStuff.getInstance().blockIdNames);
         }
         
         return allWords.get((new Random()).nextInt(allWords.size())).toUpperCase();

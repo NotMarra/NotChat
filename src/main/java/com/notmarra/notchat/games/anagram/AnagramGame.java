@@ -9,8 +9,8 @@ import org.bukkit.entity.Player;
 import com.notmarra.notchat.NotChat;
 import com.notmarra.notchat.games.ChatGame;
 import com.notmarra.notchat.games.ChatGameResponse;
+import com.notmarra.notlib.extensions.NotMinecraftStuff;
 import com.notmarra.notlib.utils.ChatF;
-import com.notmarra.notchat.utils.MinecraftStuff;
 
 public class AnagramGame extends ChatGame {
     public static String ID = "anagram";
@@ -47,26 +47,26 @@ public class AnagramGame extends ChatGame {
         
         // Add words from enabled categories
         if (minecraftBlocks) {
-            allWords.addAll(MinecraftStuff.getInstance().blockIdNames);
+            allWords.addAll(NotMinecraftStuff.getInstance().blockIdNames);
         }
         
         if (minecraftItems) {
-            allWords.addAll(MinecraftStuff.getInstance().itemIdNames);
+            allWords.addAll(NotMinecraftStuff.getInstance().itemIdNames);
         }
         
         if (minecraftMobs) {
-            allWords.addAll(MinecraftStuff.getInstance().entityIdNames);
+            allWords.addAll(NotMinecraftStuff.getInstance().entityIdNames);
         }
         
         if (minecraftBiomes) {
-            allWords.addAll(MinecraftStuff.getInstance().biomeIdNames);
+            allWords.addAll(NotMinecraftStuff.getInstance().biomeIdNames);
         }
         
         allWords.addAll(customWords);
         
         // if no categories, use a default set
         if (allWords.isEmpty()) {
-            allWords.addAll(MinecraftStuff.getInstance().blockIdNames);
+            allWords.addAll(NotMinecraftStuff.getInstance().blockIdNames);
         }
         
         return allWords.get((new Random()).nextInt(allWords.size())).toUpperCase();
@@ -149,13 +149,13 @@ public class AnagramGame extends ChatGame {
             if (hintsUsed == 3) {
                 hint.append("Typ slova: ");
     
-                if (MinecraftStuff.getInstance().blockIdNames.contains(originalWord)) {
+                if (NotMinecraftStuff.getInstance().blockIdNames.contains(originalWord)) {
                     hint.appendBold("BLOK", ChatF.C_GOLD);
-                } else if (MinecraftStuff.getInstance().itemIdNames.contains(originalWord)) {
+                } else if (NotMinecraftStuff.getInstance().itemIdNames.contains(originalWord)) {
                     hint.appendBold("ITEM", ChatF.C_GOLD);
-                } else if (MinecraftStuff.getInstance().entityIdNames.contains(originalWord)) {
+                } else if (NotMinecraftStuff.getInstance().entityIdNames.contains(originalWord)) {
                     hint.appendBold("MOB", ChatF.C_GOLD);
-                } else if (MinecraftStuff.getInstance().biomeIdNames.contains(originalWord)) {
+                } else if (NotMinecraftStuff.getInstance().biomeIdNames.contains(originalWord)) {
                     hint.appendBold("BIOME", ChatF.C_GOLD);
                 } else {
                     hint.appendBold("NEMOHU DETEKOVAT", ChatF.C_RED);

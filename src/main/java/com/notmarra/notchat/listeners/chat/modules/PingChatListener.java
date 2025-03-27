@@ -13,13 +13,13 @@ import org.bukkit.event.EventHandler;
 import org.bukkit.event.player.PlayerCommandPreprocessEvent;
 
 import com.notmarra.notchat.NotChat;
-import com.notmarra.notchat.listeners.BaseNotListener;
+import com.notmarra.notchat.listeners.NotChatListener;
 import com.notmarra.notlib.utils.ChatF;
 import com.notmarra.notlib.utils.command.NotCommand;
 
 import io.papermc.paper.event.player.AsyncChatEvent;
 
-public class PingChatListener extends BaseNotListener {
+public class PingChatListener extends NotChatListener {
     public static final String ID = "ping";
 
     private boolean messageEnabled;
@@ -35,19 +35,10 @@ public class PingChatListener extends BaseNotListener {
     public static final String PERMISSION_RECEIVE = "notchat.ping.receive";
     public static final String PERMISSION_RELOAD = "notchat.ping.reload";
 
-    public PingChatListener(NotChat plugin) {
-        super(plugin);
-    }
+    public PingChatListener(NotChat plugin) { super(plugin); }
 
     @Override
-    public String getId() {
-        return ID;
-    }
-
-    @Override
-    public boolean hasConfig() {
-        return true;
-    }
+    public String getId() { return ID; }
 
     @Override
     public void loadConfig() {
@@ -61,7 +52,7 @@ public class PingChatListener extends BaseNotListener {
     }
 
     @Override
-    public List<NotCommand> getNotCommands() {
+    public List<NotCommand> notCommands() {
         return List.of(
             pingCommand()
         );
@@ -123,7 +114,7 @@ public class PingChatListener extends BaseNotListener {
             if (sound != null) {
                 target.playSound(target.getLocation(), sound, (float) soundVolume, (float) soundPitch);
             } else {
-                getLogger().warning("Sound not found: " + soundName);
+                getLogger().warn(ChatF.of("Sound not found: " + soundName, ChatF.C_ORANGE).build());
                 target.playSound(target.getLocation(), Sound.ENTITY_EXPERIENCE_ORB_PICKUP, (float) soundVolume, (float) soundPitch);
             }
         }

@@ -1,32 +1,23 @@
 package com.notmarra.notchat.listeners.chat.modules;
 
 import com.notmarra.notchat.NotChat;
-import com.notmarra.notchat.listeners.BaseNotListener;
+import com.notmarra.notchat.listeners.NotChatListener;
+import com.notmarra.notlib.NotLib;
 import com.notmarra.notlib.utils.ChatF;
 
 import io.papermc.paper.event.player.AsyncChatEvent;
 
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.Player;
-
-public class FormatChatListener extends BaseNotListener {
+public class FormatChatListener extends NotChatListener {
     public static final String ID = "format";
 
     private ConfigurationSection formats;
 
-    public FormatChatListener(NotChat plugin) {
-        super(plugin);
-    }
+    public FormatChatListener(NotChat plugin) { super(plugin); }
 
     @Override
-    public String getId() {
-        return ID;
-    }
-
-    @Override
-    public boolean hasConfig() {
-        return true;
-    }
+    public String getId() { return ID; }
 
     @Override
     public void loadConfig() {
@@ -34,7 +25,7 @@ public class FormatChatListener extends BaseNotListener {
     }
 
     public String getFormat(Player player) {
-        if (NotChat.hasVault()) {
+        if (NotLib.hasVault()) {
             String group = NotChat.getPerms().getPrimaryGroup(player);
 
             if (group == null) {

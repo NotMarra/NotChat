@@ -1,31 +1,22 @@
 package com.notmarra.notchat.listeners.chat.modules;
 
 import com.notmarra.notchat.NotChat;
-import com.notmarra.notchat.listeners.BaseNotListener;
+import com.notmarra.notchat.listeners.NotChatListener;
 import com.notmarra.notlib.utils.ChatF;
 
 import net.kyori.adventure.text.Component;
 
 import org.bukkit.entity.Player;
 
-public class LocalChatListener extends BaseNotListener {
+public class LocalChatListener extends NotChatListener {
     public static final String ID = "local";
 
     private double radius;
 
-    public LocalChatListener(NotChat plugin) {
-        super(plugin);
-    }
+    public LocalChatListener(NotChat plugin) { super(plugin); }
 
     @Override
-    public String getId() {
-        return ID;
-    }
-
-    @Override
-    public boolean hasConfig() {
-        return true;
-    }
+    public String getId() { return ID; }
 
     @Override
     public void loadConfig() {

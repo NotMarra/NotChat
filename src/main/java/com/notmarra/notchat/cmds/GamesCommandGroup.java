@@ -9,6 +9,7 @@ import com.notmarra.notchat.games.hangman.HangmanGame;
 import com.notmarra.notchat.games.math.MathGame;
 import com.notmarra.notchat.games.number_guess.NumberGuessGame;
 import com.notmarra.notchat.games.true_or_false.TrueOrFalseGame;
+import com.notmarra.notchat.listeners.NotChatCommandGroup;
 import com.notmarra.notlib.utils.ChatF;
 import com.notmarra.notlib.utils.command.NotCommand;
 
@@ -21,7 +22,7 @@ import java.util.Map;
 import java.util.UUID;
 import java.util.function.Function;
 
-public class GamesCommandManager extends BaseNotCommandManager {
+public class GamesCommandGroup extends NotChatCommandGroup {
     public static final String ID = "games";
 
     private final Map<String, Function<NotChat, ChatGame>> gameConstructors = Map.of(
@@ -35,28 +36,16 @@ public class GamesCommandManager extends BaseNotCommandManager {
 
     private final Map<UUID, ChatGame> activeGames = new HashMap<>();
 
-    public GamesCommandManager(NotChat plugin) {
+    public GamesCommandGroup(NotChat plugin) {
         super(plugin);
         startGameScheduler();
     }
 
     @Override
-    public String getId() {
-        return ID;
-    }
+    public String getId() { return ID; }
 
     @Override
-    public boolean hasConfig() {
-        return true;
-    }
-
-    @Override
-    public void loadConfig() {
-
-    }
-
-    @Override
-    public List<NotCommand> buildCommands() {
+    public List<NotCommand> notCommands() {
         return List.of(
             // TODO: dev only, remove later
             startGameCommand(),
@@ -156,7 +145,7 @@ public class GamesCommandManager extends BaseNotCommandManager {
     }
 
     public void startGame(Player player, String gameType) {
-        ChatGame game = gameConstructors.get(gameType).apply(plugin);
+        ChatGame game = gameConstructors.get(gameType).apply((NotChat)plugin);
         if (game != null) {
             activeGames.put(player.getUniqueId(), game);
             game.initialize(player);
@@ -167,7 +156,7 @@ public class GamesCommandManager extends BaseNotCommandManager {
         List<String> gameTypes = getGameTypes();
         String randomGameType = gameTypes.get((int) (Math.random() * gameTypes.size()));
 
-        ChatGame game = gameConstructors.get(randomGameType).apply(plugin);
+        ChatGame game = gameConstructors.get(randomGameType).apply((NotChat)plugin);
         if (game != null) {
             activeGames.put(player.getUniqueId(), game);
             game.initialize(player);

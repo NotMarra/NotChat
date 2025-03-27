@@ -1,6 +1,7 @@
 package com.notmarra.notchat.cmds;
 
 import com.notmarra.notchat.NotChat;
+import com.notmarra.notchat.listeners.NotChatCommandGroup;
 import com.notmarra.notlib.utils.ChatF;
 import com.notmarra.notlib.utils.command.NotCommand;
 import com.notmarra.notlib.utils.command.arguments.NotPlayersArg;
@@ -10,7 +11,7 @@ import org.bukkit.entity.Player;
 import java.util.ArrayList;
 import java.util.List;
 
-public class MessageCommandManager extends BaseNotCommandManager {
+public class MessageCommandGroup extends NotChatCommandGroup {
     public static final String ID = "msg";
 
     private String messageReceiver;
@@ -18,19 +19,12 @@ public class MessageCommandManager extends BaseNotCommandManager {
     private String messageUsage;
     private List<String> aliases;
 
-    public MessageCommandManager(NotChat plugin) {
+    public MessageCommandGroup(NotChat plugin) {
         super(plugin);
     }
 
     @Override
-    public String getId() {
-        return ID;
-    }
-
-    @Override
-    public boolean hasConfig() {
-        return true;
-    }
+    public String getId() { return ID; }
 
     @Override
     public void loadConfig() {
@@ -41,7 +35,7 @@ public class MessageCommandManager extends BaseNotCommandManager {
     }
 
     @Override
-    public List<NotCommand> buildCommands() {
+    public List<NotCommand> notCommands() {
         List<NotCommand> commands = new ArrayList<>();
 
         for (String alias : aliases) {

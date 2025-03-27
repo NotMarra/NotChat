@@ -4,27 +4,18 @@ import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.Player;
 
 import com.notmarra.notchat.NotChat;
-import com.notmarra.notchat.listeners.BaseNotListener;
+import com.notmarra.notchat.listeners.NotChatListener;
 import com.notmarra.notlib.utils.ChatF;
 
-public class WorldListener extends BaseNotListener {
+public class WorldListener extends NotChatListener {
     public static final String ID = "world";
 
     private ConfigurationSection groups;
 
-    public WorldListener(NotChat plugin) {
-        super(plugin);
-    }
+    public WorldListener(NotChat plugin) { super(plugin); }
 
     @Override
-    public String getId() {
-        return ID;
-    }
-
-    @Override
-    public boolean hasConfig() {
-        return true;
-    }
+    public String getId() { return ID; }
 
     @Override
     public void loadConfig() {

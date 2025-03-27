@@ -9,26 +9,17 @@ import org.bukkit.event.EventHandler;
 import org.bukkit.event.player.PlayerCommandSendEvent;
 
 import com.notmarra.notchat.NotChat;
-import com.notmarra.notchat.listeners.BaseNotListener;
+import com.notmarra.notchat.listeners.NotChatListener;
 
-public class TabChatListener extends BaseNotListener {
+public class TabChatListener extends NotChatListener {
     public static final String ID = "tab";
 
     private Map<String, Command> knownCommands = new HashMap<>();
 
-    public TabChatListener(NotChat plugin) {
-        super(plugin);
-    }
+    public TabChatListener(NotChat plugin) { super(plugin); }
 
     @Override
-    public String getId() {
-        return ID;
-    }
-
-    @Override
-    public boolean hasConfig() {
-        return false;
-    }
+    public String getId() { return ID; }
 
     @EventHandler
     public void onPlayerCommandSendEvent(PlayerCommandSendEvent event) {

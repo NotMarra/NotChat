@@ -1,7 +1,7 @@
 package com.notmarra.notchat.listeners.chat.modules;
 
 import com.notmarra.notchat.NotChat;
-import com.notmarra.notchat.listeners.BaseNotListener;
+import com.notmarra.notchat.listeners.NotChatListener;
 import com.notmarra.notlib.utils.ChatF;
 import com.notmarra.notlib.utils.command.NotCommand;
 
@@ -17,7 +17,7 @@ import java.util.regex.Pattern;
 
 import org.bukkit.entity.Player;
 
-public class FilterChatListener extends BaseNotListener {
+public class FilterChatListener extends NotChatListener {
     public static final String ID = "filter";
 
     public static final String PERMISSION_BYPASS = "notchat.filter.bypass";
@@ -59,19 +59,10 @@ public class FilterChatListener extends BaseNotListener {
     private String bypassPermission;
     private boolean logFiltered;
 
-    public FilterChatListener(NotChat plugin) {
-        super(plugin);
-    }
+    public FilterChatListener(NotChat plugin) { super(plugin); }
 
     @Override
-    public String getId() {
-        return ID;
-    }
-
-    @Override
-    public boolean hasConfig() {
-        return true;
-    }
+    public String getId() { return ID; }
 
     @Override
     public void loadConfig() {
@@ -116,14 +107,14 @@ public class FilterChatListener extends BaseNotListener {
                     int end = Integer.parseInt(parts[1], 16);
                     allowedRanges.add(new UnicodeRange(start, end));
                 } catch (NumberFormatException e) {
-                    getLogger().warning("Invalid unicode range: " + range);
+                    getLogger().warn(ChatF.of("Invalid unicode range: " + range, ChatF.C_ORANGE).build());
                 }
             }
         }
     }
 
     @Override
-    public List<NotCommand> getNotCommands() {
+    public List<NotCommand> notCommands() {
         return List.of(
             filterCommand()
         );
