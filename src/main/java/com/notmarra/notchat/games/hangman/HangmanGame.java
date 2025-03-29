@@ -6,12 +6,13 @@ import java.util.List;
 import java.util.Random;
 import java.util.Set;
 
+import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.entity.Player;
 
-import com.notmarra.notchat.NotChat;
 import com.notmarra.notchat.games.ChatGame;
 import com.notmarra.notchat.games.ChatGameResponse;
 import com.notmarra.notlib.extensions.NotMinecraftStuff;
+import com.notmarra.notlib.extensions.NotPlugin;
 import com.notmarra.notlib.utils.ChatF;
 
 public class HangmanGame extends ChatGame {
@@ -29,8 +30,8 @@ public class HangmanGame extends ChatGame {
     private boolean minecraftBiomes;
     private List<String> customWords;
     
-    public HangmanGame(NotChat plugin) {
-        super(plugin);
+    public HangmanGame(NotPlugin plugin, FileConfiguration gamesConfig) {
+        super(plugin, gamesConfig);
         
         this.guessedLetters = new HashSet<>();
         this.incorrectGuesses = 0;

@@ -8,11 +8,12 @@ import java.util.Set;
 import javax.annotation.Nullable;
 
 import org.bukkit.configuration.ConfigurationSection;
+import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.entity.Player;
 
-import com.notmarra.notchat.NotChat;
 import com.notmarra.notchat.games.ChatGame;
 import com.notmarra.notchat.games.ChatGameResponse;
+import com.notmarra.notlib.extensions.NotPlugin;
 import com.notmarra.notlib.utils.ChatF;
 
 public class TrueOrFalseGame extends ChatGame {
@@ -99,8 +100,8 @@ public class TrueOrFalseGame extends ChatGame {
         }
     }
     
-    public TrueOrFalseGame(NotChat plugin) {
-        super(plugin);
+    public TrueOrFalseGame(NotPlugin plugin, FileConfiguration gamesConfig) {
+        super(plugin, gamesConfig);
         
         this.completed = false;
         

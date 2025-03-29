@@ -19,7 +19,8 @@ public final class NotChat extends NotPlugin {
     private static Permission perms;
 
     @Override
-    public void initListeners() {
+    public void initNotPlugin() {
+        // listeners
         addListener(FilterChatListener.ID, new FilterChatListener(this));
         addListener(FormatChatListener.ID, new FormatChatListener(this));
         addListener(LocalChatListener.ID, new LocalChatListener(this));
@@ -27,19 +28,14 @@ public final class NotChat extends NotPlugin {
         addListener(TabChatListener.ID, new TabChatListener(this));
         addListener(ColorChatInvListener.ID, new ColorChatInvListener(this));
         addListener(WorldListener.ID, new WorldListener(this));
-
         // main chat listener using format, filter, and local
         addListener(MainChatListener.ID, new MainChatListener(this));
-    }
 
-    @Override
-    public void initCommandGroups() {
+        // commands
         addCommandGroup(GamesCommandGroup.ID, new GamesCommandGroup(this));
         addCommandGroup(MessageCommandGroup.ID, new MessageCommandGroup(this));
-    }
 
-    @Override
-    public void initPluginCallbacks() {
+        // plugin callbacks
         addPluginEnabledCallback("Vault", () -> {
             this.getLogger().info("Vault found, hooking into it");
             perms = getServer()

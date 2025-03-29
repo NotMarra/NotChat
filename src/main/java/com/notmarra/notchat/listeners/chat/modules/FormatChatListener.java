@@ -7,20 +7,28 @@ import com.notmarra.notlib.utils.ChatF;
 
 import io.papermc.paper.event.player.AsyncChatEvent;
 
+import java.util.List;
+
 import org.bukkit.configuration.ConfigurationSection;
+import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.entity.Player;
 public class FormatChatListener extends NotChatListener {
     public static final String ID = "format";
 
     private ConfigurationSection formats;
 
-    public FormatChatListener(NotChat plugin) { super(plugin); }
+    public FormatChatListener(NotChat plugin) {
+        super(plugin);
+        registerConfigurable();
+    }
 
     @Override
     public String getId() { return ID; }
 
     @Override
-    public void loadConfig() {
+    public void onConfigReload(List<String> reloadedConfigs) {
+        FileConfiguration config = getConfig(getModuleConfigPath());
+        
         formats = config.getConfigurationSection("formats");
     }
 
@@ -54,8 +62,8 @@ public class FormatChatListener extends NotChatListener {
         String formatType = getFormat(player);
 
         return ChatF.empty()
+            .withEntity(player)
             .append(formats.getString(formatType))
-            .withPlayer(player)
             .replace(ChatF.K_MESSAGE, message);
     }
 }

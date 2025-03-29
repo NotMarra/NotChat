@@ -1,5 +1,7 @@
 package com.notmarra.notchat.listeners;
 
+import java.util.List;
+
 import com.notmarra.notchat.NotChat;
 import com.notmarra.notlib.extensions.NotListener;
 
@@ -18,10 +20,12 @@ public abstract class NotChatListener extends NotListener {
 
     private String getModulePath() { return "modules." + getId(); }
 
+    public String getModuleConfigPath() { return "modules/" + getId() + ".yml"; }
+
     @Override
-    public String getConfigPath() {
-        if (isModule()) return "modules/" + getId() + ".yml";
-        return null;
+    public List<String> getConfigPaths() {
+        if (isModule()) return List.of(getModuleConfigPath());
+        return List.of();
     }
 
     @Override

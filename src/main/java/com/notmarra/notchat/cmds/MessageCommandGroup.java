@@ -6,6 +6,7 @@ import com.notmarra.notlib.utils.ChatF;
 import com.notmarra.notlib.utils.command.NotCommand;
 import com.notmarra.notlib.utils.command.arguments.NotPlayersArg;
 
+import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.entity.Player;
 
 import java.util.ArrayList;
@@ -21,13 +22,15 @@ public class MessageCommandGroup extends NotChatCommandGroup {
 
     public MessageCommandGroup(NotChat plugin) {
         super(plugin);
+        registerConfigurable();
     }
 
     @Override
     public String getId() { return ID; }
 
     @Override
-    public void loadConfig() {
+    public void onConfigReload(List<String> reloadedConfigs) {
+        FileConfiguration config = getConfig(getModuleConfigPath());
         messageReceiver = config.getString("message_receiver");
         messageSender = config.getString("message_sender");
         messageUsage = config.getString("message_usage");
@@ -57,14 +60,14 @@ public class MessageCommandGroup extends NotChatCommandGroup {
         players.greedyStringArg("message", arg -> {
             for (Player targetPlayer : players.get()) {
                 ChatF.of(messageSender)
-                    .withPlayer(arg.getPlayer())
-                    .withTargetPlayer(targetPlayer)
+                    .withEntity(arg.getPlayer())
+                    .withTargetEntity(targetPlayer)
                     .replace(ChatF.K_MESSAGE, arg.get())
                     .sendTo(arg.getPlayer());
 
                 ChatF.of(messageReceiver)
-                    .withPlayer(arg.getPlayer())
-                    .withTargetPlayer(targetPlayer)
+                    .withEntity(arg.getPlayer())
+                    .withTargetEntity(targetPlayer)
                     .replace(ChatF.K_MESSAGE, arg.get())
                     .sendTo(targetPlayer);
             }

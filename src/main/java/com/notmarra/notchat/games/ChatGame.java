@@ -1,10 +1,11 @@
 package com.notmarra.notchat.games;
 
+import com.notmarra.notlib.extensions.NotPlugin;
 import com.notmarra.notlib.utils.ChatF;
-import com.notmarra.notchat.NotChat;
 import com.notmarra.notchat.utils.ConfigFiles;
 
 import org.bukkit.configuration.ConfigurationSection;
+import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.entity.Player;
 
 import java.util.ArrayList;
@@ -12,20 +13,20 @@ import java.util.List;
 
 
 public abstract class ChatGame {
-    public NotChat plugin;
+    public NotPlugin plugin;
     public long startTime;
     public ConfigurationSection settings;
     public List<String> rewardCommands;
 
-    public ChatGame(NotChat plugin) {
+    public ChatGame(NotPlugin plugin, FileConfiguration gamesConfig) {
         this.plugin = plugin;
         this.startTime = System.currentTimeMillis();
 
-        this.settings = ConfigFiles.getConfigurationSection("games.yml", getId() + ".settings");
+        this.settings = gamesConfig.getConfigurationSection(getId() + ".settings");
         if (this.settings == null) {
             this.settings = ConfigFiles.emptyConfigurationSection();
         }
-        this.rewardCommands = ConfigFiles.getStringList("games.yml", getId() + ".reward_commands");
+        this.rewardCommands = gamesConfig.getStringList(getId() + ".reward_commands");
     }
 
     public abstract String getId();
@@ -65,7 +66,7 @@ public abstract class ChatGame {
         rewardCommands.addAll(response.rewardCommands);
 
         for (String command : rewardCommands) {
-            player.performCommand(ChatF.of(command).withPlayer(player).buildString());
+            player.performCommand(ChatF.of(command).withEntity(player).buildString());
         }
     }
 

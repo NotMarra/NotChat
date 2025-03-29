@@ -5,12 +5,13 @@ import java.util.List;
 import java.util.Random;
 import java.util.concurrent.TimeUnit;
 
+import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.entity.Player;
 
-import com.notmarra.notchat.NotChat;
 import com.notmarra.notchat.games.ChatGame;
 import com.notmarra.notchat.games.ChatGameResponse;
 import com.notmarra.notlib.extensions.NotMinecraftStuff;
+import com.notmarra.notlib.extensions.NotPlugin;
 import com.notmarra.notlib.utils.ChatF;
 
 public class FastTypeGame extends ChatGame {
@@ -27,8 +28,8 @@ public class FastTypeGame extends ChatGame {
     private boolean minecraftBiomes;
     private List<String> customWords;
     
-    public FastTypeGame(NotChat plugin) {
-        super(plugin);
+    public FastTypeGame(NotPlugin plugin, FileConfiguration gamesConfig) {
+        super(plugin, gamesConfig);
         
         this.completed = false;
         

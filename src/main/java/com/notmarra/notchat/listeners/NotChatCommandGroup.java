@@ -1,17 +1,21 @@
 package com.notmarra.notchat.listeners;
 
-import com.notmarra.notchat.NotChat;
+import java.util.List;
+
 import com.notmarra.notlib.extensions.NotCommandGroup;
+import com.notmarra.notlib.extensions.NotPlugin;
 
 public abstract class NotChatCommandGroup extends NotCommandGroup {
-    public NotChatCommandGroup(NotChat plugin) { super(plugin); }
+    public NotChatCommandGroup(NotPlugin plugin) { super(plugin); }
 
     public abstract String getId();
 
     private String getModulePath() { return "modules." + getId(); }
 
+    public String getModuleConfigPath() { return "modules/" + getId() + ".yml"; }
+
     @Override
-    public String getConfigPath() { return "modules/" + getId() + ".yml"; }
+    public List<String> getConfigPaths() { return List.of(getModuleConfigPath()); }
 
     @Override
     public boolean isEnabled() {

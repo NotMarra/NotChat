@@ -6,6 +6,9 @@ import com.notmarra.notlib.utils.ChatF;
 
 import net.kyori.adventure.text.Component;
 
+import java.util.List;
+
+import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.entity.Player;
 
 public class LocalChatListener extends NotChatListener {
@@ -13,13 +16,18 @@ public class LocalChatListener extends NotChatListener {
 
     private double radius;
 
-    public LocalChatListener(NotChat plugin) { super(plugin); }
+    public LocalChatListener(NotChat plugin) {
+        super(plugin);
+        registerConfigurable();
+    }
 
     @Override
     public String getId() { return ID; }
 
     @Override
-    public void loadConfig() {
+    public void onConfigReload(List<String> reloadedConfigs) {
+        FileConfiguration config = getConfig(getModuleConfigPath());
+
         radius = config.getDouble("radius");
     }
 

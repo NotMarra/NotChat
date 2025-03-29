@@ -2,11 +2,12 @@ package com.notmarra.notchat.games.number_guess;
 
 import java.util.Random;
 
+import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.entity.Player;
 
-import com.notmarra.notchat.NotChat;
 import com.notmarra.notchat.games.ChatGame;
 import com.notmarra.notchat.games.ChatGameResponse;
+import com.notmarra.notlib.extensions.NotPlugin;
 import com.notmarra.notlib.utils.ChatF;
 
 public class NumberGuessGame extends ChatGame {
@@ -48,8 +49,9 @@ public class NumberGuessGame extends ChatGame {
         }
     }
     
-    public NumberGuessGame(NotChat plugin) {
-        super(plugin);
+    public NumberGuessGame(NotPlugin plugin, FileConfiguration gamesConfig) {
+        super(plugin, gamesConfig);
+
         GameDifficulty difficulty = GameDifficulty.MEDIUM;
         this.minNumber = difficulty.getMinValue();
         this.maxNumber = difficulty.getMaxValue();

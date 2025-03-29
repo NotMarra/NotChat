@@ -1,6 +1,5 @@
 package com.notmarra.notchat.cmds;
 
-import com.notmarra.notchat.NotChat;
 import com.notmarra.notchat.games.ChatGame;
 import com.notmarra.notchat.games.ChatGameResponse;
 import com.notmarra.notchat.games.anagram.AnagramGame;
@@ -10,22 +9,26 @@ import com.notmarra.notchat.games.math.MathGame;
 import com.notmarra.notchat.games.number_guess.NumberGuessGame;
 import com.notmarra.notchat.games.true_or_false.TrueOrFalseGame;
 import com.notmarra.notchat.listeners.NotChatCommandGroup;
+import com.notmarra.notlib.extensions.NotPlugin;
 import com.notmarra.notlib.utils.ChatF;
 import com.notmarra.notlib.utils.command.NotCommand;
 
 import org.bukkit.Bukkit;
+import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.entity.Player;
 
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.UUID;
-import java.util.function.Function;
+import java.util.function.BiFunction;
 
 public class GamesCommandGroup extends NotChatCommandGroup {
     public static final String ID = "games";
 
-    private final Map<String, Function<NotChat, ChatGame>> gameConstructors = Map.of(
+    private FileConfiguration gamesConfig;
+
+    private final Map<String, BiFunction<NotPlugin, FileConfiguration, ChatGame>> gameConstructors = Map.of(
         MathGame.ID, MathGame::new,
         NumberGuessGame.ID, NumberGuessGame::new,
         HangmanGame.ID, HangmanGame::new,
@@ -36,13 +39,19 @@ public class GamesCommandGroup extends NotChatCommandGroup {
 
     private final Map<UUID, ChatGame> activeGames = new HashMap<>();
 
-    public GamesCommandGroup(NotChat plugin) {
+    public GamesCommandGroup(NotPlugin plugin) {
         super(plugin);
+        registerConfigurable();
         startGameScheduler();
     }
 
     @Override
     public String getId() { return ID; }
+
+    @Override
+    public void onConfigReload(List<String> reloadedConfigs) {
+        gamesConfig = getConfig(getModuleConfigPath());
+    }
 
     @Override
     public List<NotCommand> notCommands() {
@@ -145,7 +154,7 @@ public class GamesCommandGroup extends NotChatCommandGroup {
     }
 
     public void startGame(Player player, String gameType) {
-        ChatGame game = gameConstructors.get(gameType).apply((NotChat)plugin);
+        ChatGame game = gameConstructors.get(gameType).apply(plugin, gamesConfig);
         if (game != null) {
             activeGames.put(player.getUniqueId(), game);
             game.initialize(player);
@@ -155,8 +164,8 @@ public class GamesCommandGroup extends NotChatCommandGroup {
     public void startRandomGame(Player player) {
         List<String> gameTypes = getGameTypes();
         String randomGameType = gameTypes.get((int) (Math.random() * gameTypes.size()));
-
-        ChatGame game = gameConstructors.get(randomGameType).apply((NotChat)plugin);
+        ChatGame game = gameConstructors.get(randomGameType).apply(plugin, gamesConfig);
+        
         if (game != null) {
             activeGames.put(player.getUniqueId(), game);
             game.initialize(player);

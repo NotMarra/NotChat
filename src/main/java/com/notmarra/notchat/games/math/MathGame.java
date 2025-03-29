@@ -1,10 +1,11 @@
 package com.notmarra.notchat.games.math;
 
+import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.entity.Player;
 
-import com.notmarra.notchat.NotChat;
 import com.notmarra.notchat.games.ChatGame;
 import com.notmarra.notchat.games.ChatGameResponse;
+import com.notmarra.notlib.extensions.NotPlugin;
 import com.notmarra.notlib.utils.ChatF;
 
 public class MathGame extends ChatGame {
@@ -12,8 +13,9 @@ public class MathGame extends ChatGame {
 
     public MathGameProblem mathProblem;
     
-    public MathGame(NotChat plugin) {
-        super(plugin);
+    public MathGame(NotPlugin plugin, FileConfiguration gamesConfig) {
+        super(plugin, gamesConfig);
+
         mathProblem = new MathGameProblem(MathGameProblemDifficulty.random());
     }
 

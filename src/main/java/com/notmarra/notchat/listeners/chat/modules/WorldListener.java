@@ -1,6 +1,9 @@
 package com.notmarra.notchat.listeners.chat.modules;
 
+import java.util.List;
+
 import org.bukkit.configuration.ConfigurationSection;
+import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.entity.Player;
 
 import com.notmarra.notchat.NotChat;
@@ -12,13 +15,18 @@ public class WorldListener extends NotChatListener {
 
     private ConfigurationSection groups;
 
-    public WorldListener(NotChat plugin) { super(plugin); }
+    public WorldListener(NotChat plugin) {
+        super(plugin);
+        registerConfigurable();
+    }
 
     @Override
     public String getId() { return ID; }
 
     @Override
-    public void loadConfig() {
+    public void onConfigReload(List<String> reloadedConfigs) {
+        FileConfiguration config = getConfig(getModuleConfigPath());
+
         groups = config.getConfigurationSection("groups");
     }
 

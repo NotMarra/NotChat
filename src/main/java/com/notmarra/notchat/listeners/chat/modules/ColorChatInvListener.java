@@ -6,6 +6,7 @@ import java.util.Map;
 import java.util.UUID;
 
 import org.bukkit.Material;
+import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.entity.Player;
 
 import com.notmarra.notchat.NotChat;
@@ -58,13 +59,16 @@ public class ColorChatInvListener extends NotChatListener {
         colorMaterials.put(ChatColor.LIGHT_PURPLE, Material.MAGENTA_WOOL);
         colorMaterials.put(ChatColor.YELLOW, Material.YELLOW_WOOL);
         colorMaterials.put(ChatColor.WHITE, Material.WHITE_WOOL);
+        registerConfigurable();
     }
 
     @Override
     public String getId() { return ID; }
 
     @Override
-    public void loadConfig() {
+    public void onConfigReload(List<String> reloadedConfigs) {
+        FileConfiguration config = getConfig(getModuleConfigPath());
+        
         defaultColor = config.getString("default_color", "");
         colorNames = config.getBoolean("color_names", false);
         allowedColors = config.getStringList("allowed_colors");
@@ -153,7 +157,7 @@ public class ColorChatInvListener extends NotChatListener {
             Player player = arg.getPlayer();
 
             if (player.hasPermission(PERMISSION_RELOAD)) {
-                reloadConfig();
+                reload();
 
                 ChatF.empty()
                     .appendBold(getId().toUpperCase() + " configuration reloaded!", ChatF.C_GREEN)

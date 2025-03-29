@@ -15,6 +15,7 @@ import java.util.concurrent.ConcurrentHashMap;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.entity.Player;
 
 public class FilterChatListener extends NotChatListener {
@@ -59,13 +60,18 @@ public class FilterChatListener extends NotChatListener {
     private String bypassPermission;
     private boolean logFiltered;
 
-    public FilterChatListener(NotChat plugin) { super(plugin); }
+    public FilterChatListener(NotChat plugin) {
+        super(plugin);
+        registerConfigurable();
+    }
 
     @Override
     public String getId() { return ID; }
 
     @Override
-    public void loadConfig() {
+    public void onConfigReload(List<String> reloadedConfigs) {
+        FileConfiguration config = getConfig(getModuleConfigPath());
+
         // General filter settings
         bypassPermission = config.getString("general.bypass_permission", PERMISSION_BYPASS);
         logFiltered = config.getBoolean("general.log_filtered", true);
@@ -133,7 +139,7 @@ public class FilterChatListener extends NotChatListener {
             Player player = arg.getPlayer();
 
             if (player.hasPermission(PERMISSION_RELOAD)) {
-                reloadConfig();
+                reloadWithFiles();
 
                 ChatF.empty()
                     .appendBold(getId().toUpperCase() + " configuration reloaded!", ChatF.C_GREEN)

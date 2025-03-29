@@ -8,6 +8,7 @@ import org.bukkit.Bukkit;
 import org.bukkit.NamespacedKey;
 import org.bukkit.Registry;
 import org.bukkit.Sound;
+import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.player.PlayerCommandPreprocessEvent;
@@ -35,20 +36,25 @@ public class PingChatListener extends NotChatListener {
     public static final String PERMISSION_RECEIVE = "notchat.ping.receive";
     public static final String PERMISSION_RELOAD = "notchat.ping.reload";
 
-    public PingChatListener(NotChat plugin) { super(plugin); }
+    public PingChatListener(NotChat plugin) {
+        super(plugin);
+        registerConfigurable();
+    }
 
     @Override
     public String getId() { return ID; }
 
     @Override
-    public void loadConfig() {
-        this.messageEnabled = config.getBoolean("message.enabled", true);
-        this.messageText = config.getString("message.text", "You have been pinged!");
-        this.soundEnabled = config.getBoolean("sound.enabled", true);
-        this.soundName = config.getString("sound.name", "entity.experience_orb.pickup");
-        this.soundVolume = config.getDouble("sound.volume", 1.0);
-        this.soundPitch = config.getDouble("sound.pitch", 1.0);
-        this.commands = config.getStringList("commands");
+    public void onConfigReload(List<String> reloadedConfigs) {
+        FileConfiguration config = getConfig(getModuleConfigPath());
+
+        messageEnabled = config.getBoolean("message.enabled", true);
+        messageText = config.getString("message.text", "You have been pinged!");
+        soundEnabled = config.getBoolean("sound.enabled", true);
+        soundName = config.getString("sound.name", "entity.experience_orb.pickup");
+        soundVolume = config.getDouble("sound.volume", 1.0);
+        soundPitch = config.getDouble("sound.pitch", 1.0);
+        commands = config.getStringList("commands");
     }
 
     @Override
@@ -102,7 +108,7 @@ public class PingChatListener extends NotChatListener {
     private void pingPlayer(Player sender, Player target) {
         if (messageEnabled) {
             ChatF.empty()
-                .withPlayer(sender)
+                .withEntity(sender)
                 .append(messageText, ChatF.C_YELLOW)
                 .sendTo(target);
         }
@@ -133,7 +139,7 @@ public class PingChatListener extends NotChatListener {
             Player player = arg.getPlayer();
 
             if (player.hasPermission(PERMISSION_RELOAD)) {
-                reloadConfig();
+                reloadWithFiles();
 
                 ChatF.empty()
                     .appendBold(getId().toUpperCase() + " configuration reloaded!", ChatF.C_GREEN)

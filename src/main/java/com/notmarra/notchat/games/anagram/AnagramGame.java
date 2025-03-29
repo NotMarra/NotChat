@@ -4,12 +4,13 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
 
+import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.entity.Player;
 
-import com.notmarra.notchat.NotChat;
 import com.notmarra.notchat.games.ChatGame;
 import com.notmarra.notchat.games.ChatGameResponse;
 import com.notmarra.notlib.extensions.NotMinecraftStuff;
+import com.notmarra.notlib.extensions.NotPlugin;
 import com.notmarra.notlib.utils.ChatF;
 
 public class AnagramGame extends ChatGame {
@@ -26,8 +27,8 @@ public class AnagramGame extends ChatGame {
     private boolean minecraftBiomes;
     private List<String> customWords;
     
-    public AnagramGame(NotChat plugin) {
-        super(plugin);
+    public AnagramGame(NotPlugin plugin, FileConfiguration gamesConfig) {
+        super(plugin, gamesConfig);
         
         this.hintsUsed = 0;
         this.solved = false;
