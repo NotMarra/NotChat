@@ -79,7 +79,7 @@ public class ColorChatInvListener extends NotChatListener {
     public Component applyColorToMessage(Player player, String message) {
         UUID playerId = player.getUniqueId();
         
-        if (playerColors.containsKey(playerId)) {
+        if (isEnabled() && playerColors.containsKey(playerId)) {
             ChatColor color = playerColors.get(playerId);
             return ChatF.of(message, color.getColor()).build();
         }

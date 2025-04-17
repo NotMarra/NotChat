@@ -21,19 +21,19 @@ public final class NotChat extends NotPlugin {
     @Override
     public void initNotPlugin() {
         // listeners
-        addListener(FilterChatListener.ID, new FilterChatListener(this));
-        addListener(FormatChatListener.ID, new FormatChatListener(this));
-        addListener(LocalChatListener.ID, new LocalChatListener(this));
-        addListener(PingChatListener.ID, new PingChatListener(this));
-        addListener(TabChatListener.ID, new TabChatListener(this));
-        addListener(ColorChatInvListener.ID, new ColorChatInvListener(this));
-        addListener(WorldListener.ID, new WorldListener(this));
+        addListener(new FilterChatListener(this));
+        addListener(new FormatChatListener(this));
+        addListener(new LocalChatListener(this));
+        addListener(new PingChatListener(this));
+        addListener(new TabChatListener(this));
+        addListener(new ColorChatInvListener(this));
+        addListener(new WorldListener(this));
         // main chat listener using format, filter, and local
-        addListener(MainChatListener.ID, new MainChatListener(this));
+        addListener(new MainChatListener(this));
 
         // commands
-        addCommandGroup(GamesCommandGroup.ID, new GamesCommandGroup(this));
-        addCommandGroup(MessageCommandGroup.ID, new MessageCommandGroup(this));
+        addCommandGroup(new GamesCommandGroup(this));
+        addCommandGroup(new MessageCommandGroup(this));
 
         // plugin callbacks
         addPluginEnabledCallback("Vault", () -> {
@@ -49,7 +49,13 @@ public final class NotChat extends NotPlugin {
     public void onEnable() {
         instance = this;
         super.onEnable();
-        this.getLogger().info("Enabled successfully - Version: " + this.getPluginMeta().getVersion());
+        this.getLogger().info("Enabled (Version: " + this.getPluginMeta().getVersion() + ")");
+    }
+
+    @Override
+    public void onDisable() {
+        super.onDisable();
+        this.getLogger().info("Disabled (Version: " + this.getPluginMeta().getVersion() + ")");
     }
 
     public FilterChatListener getFilterChatListener() { return (FilterChatListener) getListener(FilterChatListener.ID); }

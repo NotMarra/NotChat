@@ -97,7 +97,10 @@
         <dependency>
             <groupId>com.github.NotMarra</groupId>
             <artifactId>NotLib</artifactId>
-            <version>9d0cf18742687a854995fdd99d3ad56f4b79640e</version>
+            <!-- <version>b80c5868bf34cdbdbf31e86ea9de2898bc8b7ee2</version> -->
+            <version>0.1-DEV</version>
+            <scope>system</scope>
+            <systemPath>C:\Users\icema\Downloads\paper\plugins\NotLib.jar</systemPath>
         </dependency>
     </dependencies>
 </project>

@@ -20,6 +20,6 @@ modules:
   games: true
   tags: true # TODO: Add this module - menu, custom tags setuped in tags.yml
   tab: true
-  color: true # TODO: Add this module - menu, custom color setuped in color.yml
+  color: true
   ping: true
-  filter: true # TODO: Add this module - anti-spam, anti-advertise, anti-caps, anti-unicode atd.
+  filter: true

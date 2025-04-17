@@ -31,11 +31,29 @@ public class LocalChatListener extends NotChatListener {
         radius = config.getDouble("radius");
     }
 
-    public void sendMessage(Player player, Component message) {
-        sendMessage(player, ChatF.of(message));
+    public boolean canSendMessage(Player src, Player dest) {
+        if (!isEnabled()) return true;
+
+        if (src.getWorld() != dest.getWorld()) {
+            return false;
+        }
+
+        if (src.getLocation().distance(dest.getLocation()) > radius) {
+            return false;
+        }
+
+        return true;
     }
 
-    public void sendMessage(Player player, ChatF message) {
+    public void sendMessage(Player player, Component message) {
+        if (isEnabled()) {
+            localBroadcast(player, ChatF.of(message));
+        } else {
+            getServer().broadcast(message);
+        }
+    }
+
+    public void localBroadcast(Player player, ChatF message) {
         for (Player p : player.getWorld().getPlayers()) {
             if (p.getLocation().distance(player.getLocation()) <= radius) {
                 message.sendTo(p);

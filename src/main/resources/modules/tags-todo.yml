@@ -1,0 +1,39 @@
+pattern:
+  - '#########'
+  - '#########'
+  - '####X####'
+  - '#########'
+  - '#########'
+  - '#########'
+
+menus:
+  initial:
+    - '#########'
+    - '#########'
+    - '####X####'
+    - '#########'
+    - '#########'
+    - '#########'
+
+  X: # subkategorie
+    menu:
+
+    - '#########'
+    - '#########'
+    - '####X####'
+    - '#########'
+    - '#########'
+    - '#########'
+
+# menu kategorií
+  # menu sub kategorií
+    # itemy s tagy -> po klinutí se nastaví tag hrači
+
+# TABLE tags (
+#   uuid text,
+#   tag_id int
+# )
+
+# /nc tag create id <text>
+# /nc tag set _XYZT_ id
+# /nc tag remove _XYZT_

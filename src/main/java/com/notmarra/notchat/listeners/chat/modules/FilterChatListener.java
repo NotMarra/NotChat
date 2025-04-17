@@ -155,6 +155,10 @@ public class FilterChatListener extends NotChatListener {
     }
 
     public FilterResult processMessage(Player player, String message) {
+        if (!isEnabled()) {
+            return new FilterResult(false, message);
+        }
+
         if (!player.hasPermission(bypassPermission)) {
             return new FilterResult(false, message);
         }
@@ -434,8 +438,8 @@ public class FilterChatListener extends NotChatListener {
             return filteredMessage;
         }
         
-        public String getBlockMessage() {
-            return blockMessage;
+        public ChatF getBlockMessage() {
+            return ChatF.of(blockMessage, ChatF.C_RED);
         }
     }
     

@@ -2,10 +2,6 @@ package com.notmarra.notchat.listeners.chat;
 
 import com.notmarra.notchat.NotChat;
 import com.notmarra.notchat.listeners.NotChatListener;
-import com.notmarra.notchat.listeners.chat.modules.ColorChatInvListener;
-import com.notmarra.notchat.listeners.chat.modules.FilterChatListener;
-import com.notmarra.notchat.listeners.chat.modules.FormatChatListener;
-import com.notmarra.notchat.listeners.chat.modules.LocalChatListener;
 import com.notmarra.notchat.listeners.chat.modules.FilterChatListener.FilterResult;
 import com.notmarra.notlib.utils.ChatF;
 
@@ -28,53 +24,21 @@ public class MainChatListener extends NotChatListener {
 
     @EventHandler
     public void onChat(AsyncChatEvent event) {
-        Player player = event.getPlayer();
-        String message = ChatF.empty().append(event.message()).buildString();
-
-        FilterChatListener filter = plugin.getFilterChatListener();
-        if (filter != null && filter.isEnabled()) {
-            FilterResult result = filter.processMessage(player, message);
-
-            if (result.isBlocked()) {
-                event.setCancelled(true);
-                ChatF.of(result.getBlockMessage(), ChatF.C_RED).sendTo(player);
-                return;
-            } else {
-                message = result.getFilteredMessage();
-            }
-        }
-
-        Component finalMessage = ChatF.of(message).build();
-
-        getLogger().info("Message: " + message);
-        
-        ColorChatInvListener color = plugin.getColorChatInvListener();
-        if (color != null && color.isEnabled()) {
-            finalMessage = color.applyColorToMessage(player, message);
-        }
-
-        getLogger().info("Colored message: " + ChatF.of(finalMessage).buildString());
-
-        FormatChatListener format = plugin.getFormatChatListener();
-        if (format != null && format.isEnabled()) {
-            finalMessage = format.formatMessage(player, finalMessage).build();
-        }
-
-        getLogger().info("Formatted message: " + ChatF.of(finalMessage).buildString());
-
-        LocalChatListener local = plugin.getLocalChatListener();
-        if (local != null && local.isEnabled()) {
-            local.sendMessage(player, finalMessage);
-        } else {
-            getServer().broadcast(finalMessage);
-        }
-
-        // TODO: this, don't forget for the local chat listener
-        // WorldListener world = (WorldListener) plugin.getListener(WorldListener.ID);
-        // if (world != null && world.isEnabled()) {
-        //     world.sendMessage(player, ChatF.of(message));
-        // }
-
         event.setCancelled(true);
+
+        Player player = event.getPlayer();
+        String origMessage = ChatF.empty().append(event.message()).buildString();
+
+        // Original -> Filter -> Color -> Format -> Send (World/Local)
+
+        FilterResult result = plugin.getFilterChatListener().processMessage(player, origMessage);
+        if (result.isBlocked()) {
+            result.getBlockMessage().sendTo(player);
+        } else {
+            String filtered = result.getFilteredMessage();
+            Component msg = plugin.getColorChatInvListener().applyColorToMessage(player, filtered);
+            msg = plugin.getFormatChatListener().formatMessage(player, msg);
+            plugin.getWorldListener().sendMessage(player, msg);
+        }
     }
 }

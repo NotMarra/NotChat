@@ -6,6 +6,7 @@ import com.notmarra.notlib.NotLib;
 import com.notmarra.notlib.utils.ChatF;
 
 import io.papermc.paper.event.player.AsyncChatEvent;
+import net.kyori.adventure.text.Component;
 
 import java.util.List;
 
@@ -54,16 +55,20 @@ public class FormatChatListener extends NotChatListener {
         return "default";
     }
 
-    public ChatF formatMessage(Player player, AsyncChatEvent event) {
+    public Component formatMessage(Player player, AsyncChatEvent event) {
         return formatMessage(player, ChatF.of(event.message()).build());
     }
 
-    public ChatF formatMessage(Player player, Object message) {
-        String formatType = getFormat(player);
+    public Component formatMessage(Player player, Object message) {
+        ChatF newMessage = ChatF.empty().withEntity(player);
 
-        return ChatF.empty()
-            .withEntity(player)
-            .append(formats.getString(formatType))
-            .replace(ChatF.K_MESSAGE, message);
+        if (isEnabled()) {
+            String formatType = getFormat(player);
+            newMessage.append(formats.getString(formatType));
+        }
+
+        newMessage.replace(ChatF.K_MESSAGE, message);
+
+        return newMessage.build();
     }
 }
